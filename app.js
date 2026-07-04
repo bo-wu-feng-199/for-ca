@@ -332,3 +332,4 @@ historyClear.addEventListener("click", () => {
 updateAvatarUI();
 updateCurrencyUI();
 renderHistory();
+// redeploy trigger
