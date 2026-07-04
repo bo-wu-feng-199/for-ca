@@ -1,0 +1,149 @@
+/* ── Reset & Base ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f7fa;
+  --surface: #fff;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --success: #16a34a;
+  --warn: #d97706;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* ── Container ─────────────────────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 480px;
+}
+
+header { text-align: center; margin-bottom: 28px; }
+header h1 { font-size: 1.5rem; font-weight: 700; }
+.subtitle { color: var(--text-secondary); font-size: .875rem; margin-top: 4px; }
+
+/* ── Form ──────────────────────────────────────────────────────────────── */
+.calc-form {
+  background: var(--surface);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: .875rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  transition: border .2s;
+}
+.field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+
+#calc-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .2s;
+}
+#calc-btn:hover { background: var(--primary-hover); }
+#calc-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Result ────────────────────────────────────────────────────────────── */
+.result {
+  margin-top: 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.result-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.result-label { font-size: .875rem; color: var(--text-secondary); }
+.result-value { font-size: 1.75rem; font-weight: 700; color: var(--primary); }
+.result-count { font-size: .875rem; color: var(--text-secondary); margin-left: auto; }
+
+/* ── Table ─────────────────────────────────────────────────────────────── */
+#unit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+#unit-table th {
+  text-align: left;
+  font-size: .75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding-bottom: 6px;
+}
+#unit-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .9375rem;
+}
+#unit-table tbody tr:last-child td { border-bottom: none; }
+#unit-table td:last-child { text-align: right; font-weight: 600; }
+
+/* ── Remainder ─────────────────────────────────────────────────────────── */
+.remainder-warn {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  font-size: .875rem;
+  color: var(--warn);
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: .75rem;
+  color: var(--text-secondary);
+}
+
+/* ── Status helpers (hidden by default) ────────────────────────────────── */
+.hidden { display: none; }
+
+/* ── Mobile friendly ───────────────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .calc-form, .result { padding: 16px; }
+  .result-value { font-size: 1.4rem; }
+}
