@@ -1,137 +1,89 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>个人货币计算器</title>
-  <meta name="description" content="多币种支付差额最优组合计算器 — 支持7大货币体系、历史记录与分类标签">
+  <title>个人货币计算器 · CashCalc</title>
+  <meta name="description" content="极简开发者风格的个人现金计算与记录工具">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ═════ TOP BAR ══════════════════════════════════════════════════ -->
-  <header class="top-bar">
-    <div class="container top-bar-inner">
-      <button class="avatar-btn" id="avatar-btn" title="切换头像">🧑</button>
-      <div>
-        <h1>🧮 个人货币计算器</h1>
-        <p class="subtitle">输入价格与支付金额，实时生成推荐排序的结算方案</p>
-      </div>
+  <!-- ═══════ Top Bar ═══════ -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <span class="logo">🧮 CashCalc</span>
+      <span class="sub-logo">个人货币计算器</span>
+      <button id="theme-btn" class="theme-btn" title="切换主题">🌙</button>
     </div>
   </header>
 
-  <!-- ═════ MAIN ══════════════════════════════════════════════════════ -->
-  <main class="app-main">
-    <div class="container">
+  <div class="container">
 
-      <!-- ── Input card ───────────────────────────────────────────── -->
-      <div class="calc-card">
-        <!-- Currency + Tag row -->
-        <div class="calc-top-row">
-          <div class="currency-bar">
-            <label>货币</label>
-            <select id="currency-select">
-              <option value="CNY">🇨🇳 CNY</option>
-              <option value="USD">🇺🇸 USD</option>
-              <option value="EUR">🇪🇺 EUR</option>
-              <option value="GBP">🇬🇧 GBP</option>
-              <option value="JPY">🇯🇵 JPY</option>
-              <option value="KRW">🇰🇷 KRW</option>
-              <option value="HKD">🇭🇰 HKD</option>
-              <option value="CUSTOM">✏️ 自定义</option>
-            </select>
-          </div>
-          <div class="tag-bar" id="tag-bar">
-            <label>标签</label>
-            <div class="tag-options" id="tag-options">
-              <label class="tag-radio"><input type="radio" name="tag" value="shopping" checked> 🛒 购物</label>
-              <label class="tag-radio"><input type="radio" name="tag" value="dining"> 🍜 餐饮</label>
-              <label class="tag-radio"><input type="radio" name="tag" value="travel"> 🚗 出行</label>
-              <label class="tag-radio"><input type="radio" name="tag" value="cashier"> 💰 收银</label>
-              <label class="tag-radio"><input type="radio" name="tag" value="other"> 📋 其他</label>
-            </div>
-          </div>
-        </div>
+    <!-- ═══════ 1. Input ═══════ -->
+    <section class="card">
+      <div class="card-title">输入金额</div>
 
-        <!-- Custom editor -->
-        <div id="custom-editor" class="custom-editor" hidden>
-          <label>自定义面额（逗号分隔，从大到小）</label>
-          <input type="text" id="custom-units" placeholder="例: 100,50,20,10,5,1,0.5,0.1">
-        </div>
-
-        <!-- Amount inputs -->
-        <div class="form-row">
-          <div class="field">
-            <label for="price">商品价格</label>
-            <div class="input-wrap">
-              <span class="input-prefix" id="price-prefix">¥</span>
-              <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="7" autofocus>
-            </div>
-          </div>
-          <div class="field">
-            <label for="paid">支付金额</label>
-            <div class="input-wrap">
-              <span class="input-prefix" id="paid-prefix">¥</span>
-              <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="7">
-            </div>
-          </div>
-        </div>
-        <div class="form-hint" id="form-hint">ⓘ 金额范围 ¥0.01 ~ ¥1,000.00</div>
+      <div class="input-tabs">
+        <button class="tab tab-active" data-mode="dual">双框输入</button>
+        <button class="tab" data-mode="smart">单行解析</button>
       </div>
 
-      <!-- ── Guide prompt ────────────────────────────────────────── -->
-      <div id="guide-prompt" class="guide-prompt">
-        <span>💡</span>
-        <span>在上方输入商品价格和支付金额，系统将自动计算并推荐最优结算方案</span>
-      </div>
-
-      <!-- ── Result area ─────────────────────────────────────────── -->
-      <div id="result-area" class="result-area" hidden></div>
-
-      <!-- ── History ─────────────────────────────────────────────── -->
-      <section id="history-section" class="history-section" hidden>
-        <div class="history-header">
-          <h2>📜 计算记录</h2>
-          <div class="history-controls">
-            <select id="history-filter" class="history-filter">
-              <option value="all">全部标签</option>
-              <option value="shopping">🛒 购物</option>
-              <option value="dining">🍜 餐饮</option>
-              <option value="travel">🚗 出行</option>
-              <option value="cashier">💰 收银</option>
-              <option value="other">📋 其他</option>
-            </select>
-            <button id="history-clear" class="history-clear" title="清空记录">🗑️</button>
-          </div>
+      <div id="input-dual" class="input-row">
+        <div class="field">
+          <label for="price">商品价格 (¥)</label>
+          <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="8" autofocus>
         </div>
-        <div id="history-list" class="history-list"></div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ═════ FOOTER ══════════════════════════════════════════════════ -->
-  <footer class="app-footer">
-    <div class="container">
-      <h2>📖 使用说明</h2>
-      <div class="guide-grid">
-        <div class="guide-item"><span class="guide-icon">①</span>
-          <div><strong>选择货币与标签</strong><p>顶部可选 7 种货币体系及分类标签，方便后续筛选。</p></div>
-        </div>
-        <div class="guide-item"><span class="guide-icon">②</span>
-          <div><strong>输入金额</strong><p>输入商品价格与支付金额，实时计算无需点击。</p></div>
-        </div>
-        <div class="guide-item"><span class="guide-icon">③</span>
-          <div><strong>查看推荐方案</strong><p>三套方案按推荐度排序，每套附带理由与适用场景。</p></div>
-        </div>
-        <div class="guide-item"><span class="guide-icon">④</span>
-          <div><strong>历史记录</strong><p>自动保存最近 10 条记录，支持按标签筛选与清空。</p></div>
+        <span class="field-arrow">→</span>
+        <div class="field">
+          <label for="paid">支付金额 (¥)</label>
+          <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="8">
         </div>
       </div>
-      <p class="footer-note">PersonalMoneyCalc v3.1 · 多币种 · 历史记录 · 开源 MIT</p>
-    </div>
-  </footer>
+
+      <div id="input-smart" class="input-row" hidden>
+        <div class="field full">
+          <label for="smart">价格 + 支付（空格 / + / 逗号分隔）</label>
+          <input type="text" id="smart" inputmode="text" placeholder="例: 59.5 100" autocomplete="off">
+        </div>
+      </div>
+
+      <div id="tag-bar" class="tag-bar">
+        <span>标签：</span>
+        <label class="tag-opt"><input type="radio" name="tag" value="shopping" checked>🛒 购物</label>
+        <label class="tag-opt"><input type="radio" name="tag" value="dining">🍜 餐饮</label>
+        <label class="tag-opt"><input type="radio" name="tag" value="travel">🚗 出行</label>
+        <label class="tag-opt"><input type="radio" name="tag" value="cashier">💰 收银</label>
+        <label class="tag-opt"><input type="radio" name="tag" value="other">📋 其他</label>
+      </div>
+
+      <div id="error-msg" class="error-msg" hidden></div>
+    </section>
+
+    <!-- ═══════ 2. Results ═══════ -->
+    <section id="result-area" class="result-area" hidden>
+      <div class="card-title">结算方案</div>
+
+      <div id="balance-bar" class="balance-bar"></div>
+      <div id="plans-container" class="plans-container"></div>
+    </section>
+
+    <!-- ═══════ 3. History ═══════ -->
+    <section class="card">
+      <div class="card-title-row">
+        <span class="card-title">计算记录</span>
+        <div class="hist-actions">
+          <button id="export-json" class="btn-sm">JSON</button>
+          <button id="export-csv"  class="btn-sm">CSV</button>
+          <button id="export-md"   class="btn-sm">MD</button>
+          <button id="clear-all"   class="btn-sm btn-danger">清空</button>
+        </div>
+      </div>
+      <div id="history-list"></div>
+    </section>
+
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>

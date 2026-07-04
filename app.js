@@ -1,335 +1,295 @@
 /**
- * PersonalMoneyCalc v3.1 — UI controller.
- *
- * Features:
- * - Real‑time calculation (debounced)
- * - Multi‑currency + custom units
- * - 3 settlement plans with explanations
- * - History (localStorage, max 10)
- * - Avatar system
- * - Tag categories
+ * CashCalc v3.2 — UI controller.
+ * 全展开 · 实时计算 · 历史记录 · 三格式导出 · 主题切换
  */
 
-import { calculate, CURRENCIES, DEFAULT_CURRENCY, MAX_INPUT } from "./src/js/core.js";
+import { calculate, parseInput } from "./src/js/core.js";
+
+/* ── Constants ─────────────────────────────────────────────────────────── */
+const MAX_VAL = 1000;
+const MAX_HIST = 10;
+const DB = 300; // debounce ms
+const KEY_HIST = "cc32_history";
+const KEY_THEME = "cc32_theme";
+const LABELS = { optimal: "最优", balanced: "均衡", practical: "实操" };
+const TAG_LABELS = { shopping: "🛒 购物", dining: "🍜 餐饮", travel: "🚗 出行", cashier: "💰 收银", other: "📋 其他" };
+
+/* ── DOM ───────────────────────────────────────────────────────────────── */
+const themeBtn   = document.getElementById("theme-btn");
+const priceInp   = document.getElementById("price");
+const paidInp    = document.getElementById("paid");
+const smartInp   = document.getElementById("smart");
+const errMsg     = document.getElementById("error-msg");
+const resultArea = document.getElementById("result-area");
+const balanceBar = document.getElementById("balance-bar");
+const plansCtn   = document.getElementById("plans-container");
+const histList   = document.getElementById("history-list");
+const clearBtn   = document.getElementById("clear-all");
+const expJson    = document.getElementById("export-json");
+const expCsv     = document.getElementById("export-csv");
+const expMd      = document.getElementById("export-md");
+const tabs       = document.querySelectorAll(".tab");
+
+let history = loadHist();
+let dtimer;
+let mode = "dual";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Constants
+   Theme
    ═══════════════════════════════════════════════════════════════════════════ */
-const AVATARS = ["🧑", "👨", "👩", "👦", "👧", "👴", "👵", "🧔", "👨‍💼", "👩‍💼", "🕵️", "🎅"];
-const TAG_LABELS = {
-  shopping: "🛒 购物", dining: "🍜 餐饮", travel: "🚗 出行",
-  cashier: "💰 收银", other: "📋 其他",
-};
-const STORAGE_KEYS = { history: "pmc_history", avatar: "pmc_avatar" };
-const MAX_HISTORY = 10;
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   DOM refs
-   ═══════════════════════════════════════════════════════════════════════════ */
-const avatarBtn    = document.getElementById("avatar-btn");
-const priceInp     = document.getElementById("price");
-const paidInp      = document.getElementById("paid");
-const resultArea   = document.getElementById("result-area");
-const guidePrompt  = document.getElementById("guide-prompt");
-const currencySel  = document.getElementById("currency-select");
-const customEditor = document.getElementById("custom-editor");
-const customUnits  = document.getElementById("custom-units");
-const pricePrefix  = document.getElementById("price-prefix");
-const paidPrefix   = document.getElementById("paid-prefix");
-const formHint     = document.getElementById("form-hint");
-const historySec   = document.getElementById("history-section");
-const historyList  = document.getElementById("history-list");
-const historyFilter= document.getElementById("history-filter");
-const historyClear = document.getElementById("history-clear");
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   State
-   ═══════════════════════════════════════════════════════════════════════════ */
-let currencyCode = DEFAULT_CURRENCY;
-let avatar = loadAvatar();
-let history = loadHistory();
-let debounceTimer = null;
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   localStorage helpers
-   ═══════════════════════════════════════════════════════════════════════════ */
-function loadAvatar() {
-  try { return localStorage.getItem(STORAGE_KEYS.avatar) || AVATARS[0]; }
-  catch { return AVATARS[0]; }
-}
-function saveAvatar(val) {
-  try { localStorage.setItem(STORAGE_KEYS.avatar, val); } catch {}
+function loadTheme() {
+  try { return localStorage.getItem(KEY_THEME) || "light"; } catch { return "light"; }
 }
 
-function loadHistory() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.history);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
-function saveHistory() {
-  try { localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(history)); } catch {}
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  themeBtn.textContent = t === "dark" ? "☀️" : "🌙";
+  try { localStorage.setItem(KEY_THEME, t); } catch {}
 }
 
-function addHistoryEntry(entry) {
-  history.unshift(entry);
-  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
-  saveHistory();
-  renderHistory();
-}
-
-function clearHistory() {
-  history = [];
-  saveHistory();
-  renderHistory();
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Avatar
-   ═══════════════════════════════════════════════════════════════════════════ */
-function updateAvatarUI() {
-  avatarBtn.textContent = avatar;
-}
-
-avatarBtn.addEventListener("click", () => {
-  const idx = AVATARS.indexOf(avatar);
-  avatar = AVATARS[(idx + 1) % AVATARS.length];
-  saveAvatar(avatar);
-  updateAvatarUI();
-  renderHistory();          // update avatars in history
+themeBtn.addEventListener("click", () => {
+  const cur = document.documentElement.dataset.theme;
+  setTheme(cur === "dark" ? "light" : "dark");
 });
 
+setTheme(loadTheme());
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   Currency switch
+   Input mode switching
    ═══════════════════════════════════════════════════════════════════════════ */
-function getSymbol() {
-  if (currencyCode === "CUSTOM") return "¤";
-  const c = CURRENCIES[currencyCode];
-  return c ? c.symbol : "¥";
-}
-
-function updateCurrencyUI() {
-  const sym = getSymbol();
-  pricePrefix.textContent = sym;
-  paidPrefix.textContent  = sym;
-
-  if (currencyCode === "CUSTOM") {
-    customEditor.hidden = false;
-    formHint.textContent = "ⓘ 输入自定义面额（从大到小，逗号分隔）";
+tabs.forEach(t => t.addEventListener("click", () => {
+  tabs.forEach(x => x.classList.toggle("tab-active", x === t));
+  mode = t.dataset.mode;
+  document.getElementById("input-dual").hidden = mode !== "dual";
+  document.getElementById("input-smart").hidden = mode !== "smart";
+  clearError();
+  if (mode === "dual") {
+    priceInp.value = smartInp.value.split(/[\s+,]/)[0] || "";
+    paidInp.value = smartInp.value.split(/[\s+,]/)[1] || "";
+    priceInp.focus();
   } else {
-    customEditor.hidden = true;
-    const c = CURRENCIES[currencyCode];
-    formHint.textContent = `ⓘ 金额范围 ${sym}0.01 ~ ${sym}${MAX_INPUT.toLocaleString()} · ${c ? c.name : ""}`;
+    smartInp.value = priceInp.value + (paidInp.value ? " " + paidInp.value : "");
+    smartInp.focus();
   }
-  debounceRecalc();
-}
-
-currencySel.addEventListener("change", () => {
-  currencyCode = currencySel.value;
-  updateCurrencyUI();
-});
-customUnits.addEventListener("input", () => debounceRecalc());
+  debounceRun();
+}));
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Input sanitisation
+   Input handling
    ═══════════════════════════════════════════════════════════════════════════ */
 function sanitise(el) {
-  el.value = el.value.replace(/[^0-9.]/g, "");
-  const dot = el.value.indexOf(".");
-  if (dot !== -1) {
-    el.value = el.value.slice(0, dot + 1) + el.value.slice(dot + 1).replace(/\./g, "");
+  el.value = el.value.replace(/[^0-9.,+\s]/g, "");
+  const d = el.value.indexOf(".");
+  if (d !== -1) el.value = el.value.slice(0, d+1) + el.value.slice(d+1).replace(/\./g, "");
+}
+
+priceInp.addEventListener("input", () => { sanitise(priceInp); debounceRun(); });
+paidInp.addEventListener("input", () => { sanitise(paidInp); debounceRun(); });
+smartInp.addEventListener("input", () => debounceRun());
+
+function getTag() {
+  const r = document.querySelector('input[name="tag"]:checked');
+  return r ? r.value : "other";
+}
+
+function clearError() { errMsg.hidden = true; }
+function showError(msg) { errMsg.textContent = msg; errMsg.hidden = false; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Calculation
+   ═══════════════════════════════════════════════════════════════════════════ */
+function debounceRun() {
+  clearTimeout(dtimer);
+  dtimer = setTimeout(run, DB);
+}
+
+function run() {
+  clearError();
+  let price, paid;
+
+  if (mode === "smart") {
+    const p = parseInput(smartInp.value);
+    if (!p) { hideResult(); return; }
+    price = p.price; paid = p.paid;
+  } else {
+    const pv = priceInp.value, mv = paidInp.value;
+    if (!pv || !mv) { hideResult(); return; }
+    price = parseFloat(pv); paid = parseFloat(mv);
+    if (isNaN(price) || isNaN(paid)) { hideResult(); return; }
   }
-}
-priceInp.addEventListener("input", () => { sanitise(priceInp); debounceRecalc(); });
-paidInp.addEventListener("input", () => { sanitise(paidInp); debounceRecalc(); });
 
-function validateField(el) {
-  const v = parseFloat(el.value);
-  if (el.value.trim() === "" || isNaN(v) || v < 0 || v > MAX_INPUT) {
-    el.classList.toggle("error", el.value.trim() !== "");
-    return null;
+  if (price < 0 || paid < 0 || price > MAX_VAL || paid > MAX_VAL) {
+    showError(`金额范围 ¥0.01 ~ ¥${MAX_VAL.toLocaleString()}`);
+    hideResult();
+    return;
   }
-  el.classList.remove("error");
-  return v;
+
+  const r = calculate(price, paid);
+  showResult(r, price, paid);
 }
 
-function getSelectedTag() {
-  const sel = document.querySelector('input[name="tag"]:checked');
-  return sel ? sel.value : "other";
-}
-
-function parseCustomUnits() {
-  if (currencyCode !== "CUSTOM") return null;
-  const raw = customUnits.value.trim();
-  if (!raw) return null;
-  const vals = raw.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n) && n > 0);
-  if (vals.length < 2) return null;
-  return vals.sort((a, b) => b - a).map(v => ({ value: v, label: String(v) }));
+function hideResult() {
+  resultArea.hidden = true;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Debounced calculation → history
+   Render results — all 3 plans expanded
    ═══════════════════════════════════════════════════════════════════════════ */
-function debounceRecalc() {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(recalcAndSave, 200);
-}
-
-function recalcAndSave() {
-  const p = validateField(priceInp);
-  const m = validateField(paidInp);
-
-  if (priceInp.value.trim() === "" && paidInp.value.trim() === "") {
-    guidePrompt.hidden = false;
-    resultArea.hidden  = true;
-    return;
-  }
-  guidePrompt.hidden = true;
-
-  if (p === null || m === null) {
-    renderError("请输入有效的价格和支付金额");
-    return;
-  }
-
-  const customUnitsArr = parseCustomUnits();
-  if (currencyCode === "CUSTOM" && !customUnitsArr) {
-    renderError("请输入至少 2 个有效的自定义面额");
-    return;
-  }
-
-  const result = calculate(p, m, currencyCode, customUnitsArr);
-  render(result);
-
-  // Only save settled results to history
-  if (result.status === "settled" && result.plans.length > 0) {
-    const tag = getSelectedTag();
-    addHistoryEntry({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      timestamp: Date.now(),
-      price: p,
-      paid: m,
-      balance: result.balance,
-      currency: currencyCode,
-      tag,
-      avatar,
-    });
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Render — result area
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-function renderError(msg) {
-  resultArea.hidden = false;
-  resultArea.innerHTML = `<div class="result-msg"><span class="icon">⚠️</span>${msg}</div>`;
-}
-
-function render(result) {
+function showResult(r, price, paid) {
   resultArea.hidden = false;
 
-  if (result.status === "short") {
-    resultArea.innerHTML = `<div class="result-msg"><span class="icon">⛔</span><span class="strong">支付金额不足</span>，还差 <strong>${getSymbol()}${Math.abs(result.balance).toFixed(2)}</strong></div>`;
+  if (r.status === "short") {
+    balanceBar.innerHTML = "";
+    plansCtn.innerHTML = `<div class="result-msg"><span class="s">金额不足</span>，还差 ¥${Math.abs(r.balance).toFixed(2)}</div>`;
     return;
   }
-  if (result.status === "exact") {
-    resultArea.innerHTML = `<div class="result-msg"><span class="icon">✅</span><span class="strong">支付金额正好</span>，无需结算</div>`;
+  if (r.status === "exact") {
+    balanceBar.innerHTML = "";
+    plansCtn.innerHTML = `<div class="result-msg"><span class="s">支付金额正好</span>，无需结算</div>`;
     return;
   }
-  if (result.status === "invalid") {
-    renderError("请输入有效的价格和支付金额");
+  if (r.status === "invalid") {
+    showError("请输入有效金额");
+    hideResult();
     return;
   }
 
-  const planIcons  = { optimal: "⭐", balanced: "⚖️", practical: "📦" };
-  const rankLabels = ["🥇 推荐", "🥈 备选", "🥉 备选"];
+  // Save history
+  saveHist({ price, paid, balance: r.balance, planType: r.plans[0].id, tag: getTag() });
 
-  const balanceBar = `
-    <div class="balance-bar">
-      <div>
-        <div class="label">支付差额</div>
-        <div class="value">${getSymbol()}${result.balance.toFixed(2)}</div>
-      </div>
-      <div style="text-align:right">
-        <div class="label">货币</div>
-        <span class="currency-tag">${result.currency}</span>
-      </div>
-    </div>`;
+  // Balance bar
+  balanceBar.innerHTML = `
+    <div><div class="lbl">差额</div><div class="val">¥${r.balance.toFixed(2)}</div></div>
+    <div><span class="tag">推荐：${r.plans[0].name}</span></div>`;
 
-  const cards = result.plans.map((plan, i) => {
-    const icon = planIcons[plan.id] || "📋";
-    const unitsHtml = plan.units
-      .map(u => `<span class="plan-unit-item"><span class="count">${u.count}</span><span class="label">${u.label}</span></span>`)
-      .join("");
+  // 3 plans — all expanded
+  const icons = ["⭐", "⚖️", "📦"];
+  const ranks = ["🥇 推荐", "🥈 备选", "🥉 备选"];
+
+  plansCtn.innerHTML = r.plans.map((p, i) => {
+    const uhtml = p.units.map(u =>
+      `<span class="unit"><span class="c">${u.count}</span>${u.label}</span>`
+    ).join("");
     return `
-      <div class="plan-card" style="animation-delay:${i * 0.08}s">
-        <div class="plan-header">
-          <span>${icon}</span>
-          <span class="plan-name">${plan.name}</span>
-          <span class="plan-rank">${rankLabels[i]}</span>
-          <span class="plan-meta">
-            <span>🧾 ${plan.totalCount} 张/枚</span>
-            <span>🏷️ ${plan.typeCount} 种</span>
+      <div class="plan">
+        <div class="plan-head">
+          <span>${icons[i]}</span>
+          <span class="nm">${p.name}</span>
+          <span class="rk">${ranks[i]}</span>
+          <span class="mt">
+            <span>${p.totalCount} 张/枚</span>
+            <span>${p.typeCount} 种面额</span>
           </span>
         </div>
         <div class="plan-body">
-          <div class="plan-unit-list">${unitsHtml}</div>
-          <details class="plan-detail">
-            <summary>💡 为什么这样算？</summary>
-            <p class="plan-reason">${plan.reason}</p>
-            <p class="plan-scenario"><strong>适用场景：</strong>${plan.scenario}</p>
-          </details>
+          <div class="units">${uhtml}</div>
+          <div class="plan-desc">${p.desc}</div>
         </div>
       </div>`;
   }).join("");
-
-  resultArea.innerHTML = balanceBar + cards;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Render — history
+   History
    ═══════════════════════════════════════════════════════════════════════════ */
+function loadHist() {
+  try { return JSON.parse(localStorage.getItem(KEY_HIST)) || []; } catch { return []; }
+}
+function persist() {
+  try { localStorage.setItem(KEY_HIST, JSON.stringify(history)); } catch {}
+}
 
-function renderHistory() {
-  const filter = historyFilter.value;
-  let entries = filter === "all" ? history : history.filter(e => e.tag === filter);
+function saveHist(entry) {
+  history.unshift({ ...entry, timestamp: Date.now() });
+  if (history.length > MAX_HIST) history = history.slice(0, MAX_HIST);
+  persist();
+  renderHist();
+}
 
-  historySec.hidden = entries.length === 0;
-
-  if (entries.length === 0) {
-    historyList.innerHTML = `<div class="history-empty">暂无记录</div>`;
+function renderHist() {
+  if (history.length === 0) {
+    histList.innerHTML = `<div class="hist-empty">暂无记录</div>`;
     return;
   }
 
-  historyList.innerHTML = entries.map(e => {
-    const tagLabel = TAG_LABELS[e.tag] || e.tag;
-    const time = new Date(e.timestamp);
-    const timeStr = `${time.getMonth()+1}/${time.getDate()} ${String(time.getHours()).padStart(2,"0")}:${String(time.getMinutes()).padStart(2,"0")}`;
-    const sym = CURRENCIES[e.currency]?.symbol || "¥";
+  histList.innerHTML = history.map((e, i) => {
+    const t = new Date(e.timestamp);
+    const ts = `${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;
+    const tag = TAG_LABELS[e.tag] || "";
     return `
-      <div class="history-entry">
-        <div class="history-avatar">${e.avatar || "🧑"}</div>
-        <div class="history-body">
-          <div class="h-row">
-            <span class="h-amounts">${sym}${e.price.toFixed(2)} → ${sym}${e.paid.toFixed(2)}</span>
-            <span class="h-balance">差额 ${sym}${e.balance.toFixed(2)}</span>
-            <span class="history-tag">${tagLabel}</span>
+      <div class="hist-entry" data-idx="${i}">
+        <div class="hist-body">
+          <div class="hist-row1">
+            <span class="hist-amounts">¥${e.price.toFixed(2)} → ¥${e.paid.toFixed(2)}</span>
+            <span class="hist-diff">¥${e.balance.toFixed(2)}</span>
+            <span class="hist-plan">${LABELS[e.planType] || e.planType}</span>
+            ${tag ? `<span class="hist-tag">${tag}</span>` : ""}
           </div>
-          <div class="h-meta">${e.currency} · ${timeStr}</div>
+          <div class="hist-meta">${ts}</div>
         </div>
       </div>`;
   }).join("");
+
+  // Click to reuse
+  document.querySelectorAll(".hist-entry").forEach(el => {
+    el.addEventListener("click", () => {
+      const idx = parseInt(el.dataset.idx);
+      const e = history[idx];
+      if (!e) return;
+      priceInp.value = String(e.price);
+      paidInp.value = String(e.paid);
+      if (mode === "smart") smartInp.value = `${e.price} ${e.paid}`;
+      clearError();
+      run();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
 }
 
-historyFilter.addEventListener("change", renderHistory);
-historyClear.addEventListener("click", () => {
-  if (confirm("确定清空所有计算记录？")) clearHistory();
+clearBtn.addEventListener("click", () => {
+  history = []; persist(); renderHist();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Export
+   ═══════════════════════════════════════════════════════════════════════════ */
+function dl(content, name, mime = "text/plain") {
+  const b = new Blob([content], { type: `${mime};charset=utf-8` });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement("a");
+  a.href = u; a.download = name; a.click();
+  URL.revokeObjectURL(u);
+}
+
+expJson.addEventListener("click", () => {
+  const d = history.map(e => ({
+    price: e.price, paid: e.paid, diff: e.balance,
+    planType: e.planType, tag: e.tag,
+    timestamp: new Date(e.timestamp).toISOString()
+  }));
+  dl(JSON.stringify(d, null, 2), "records.json", "application/json");
+});
+
+expCsv.addEventListener("click", () => {
+  const h = "price,paid,diff,planType,tag,timestamp\n";
+  const r = history.map(e =>
+    `${e.price},${e.paid},${e.balance},${e.planType},${e.tag || ""},"${new Date(e.timestamp).toISOString()}"`
+  ).join("\n");
+  dl("\uFEFF" + h + r, "records.csv", "text/csv");
+});
+
+expMd.addEventListener("click", () => {
+  const h = "| 价格 | 支付 | 差额 | 方案 | 标签 | 时间 |\n|------|------|------|------|------|------|\n";
+  const r = history.map(e => {
+    const t = new Date(e.timestamp);
+    const ts = `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()} ${t.getHours()}:${String(t.getMinutes()).padStart(2,"0")}`;
+    const tag = TAG_LABELS[e.tag] || "";
+    return `| ¥${e.price.toFixed(2)} | ¥${e.paid.toFixed(2)} | ¥${e.balance.toFixed(2)} | ${LABELS[e.planType] || e.planType} | ${tag} | ${ts} |`;
+  }).join("\n");
+  dl(`# 结算记录\n\n${h}${r}\n`, "records.md", "text/markdown");
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Init
    ═══════════════════════════════════════════════════════════════════════════ */
-updateAvatarUI();
-updateCurrencyUI();
-renderHistory();
-// redeploy trigger
+renderHist();
