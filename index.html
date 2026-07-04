@@ -10,7 +10,7 @@
 </head>
 <body>
 
-  <!-- ═══════ Top Bar ═══════ -->
+  <!-- ═══════ Top Bar — 渐变底边 ═══════ -->
   <header class="topbar">
     <div class="container topbar-inner">
       <span class="logo">🧮 CashCalc</span>
@@ -23,7 +23,10 @@
 
     <!-- ═══════ 1. Input ═══════ -->
     <section class="card">
-      <div class="card-title">输入金额</div>
+      <div class="section-title">
+        <span>输入金额</span>
+        <span style="font-size:.75rem;font-weight:400;color:var(--text-muted)">¥0.01 ~ ¥1,000</span>
+      </div>
 
       <div class="input-tabs">
         <button class="tab tab-active" data-mode="dual">双框输入</button>
@@ -32,12 +35,12 @@
 
       <div id="input-dual" class="input-row">
         <div class="field">
-          <label for="price">商品价格 (¥)</label>
+          <label for="price">商品价格</label>
           <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="8" autofocus>
         </div>
         <span class="field-arrow">→</span>
         <div class="field">
-          <label for="paid">支付金额 (¥)</label>
+          <label for="paid">支付金额</label>
           <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="8">
         </div>
       </div>
@@ -45,12 +48,12 @@
       <div id="input-smart" class="input-row" hidden>
         <div class="field full">
           <label for="smart">价格 + 支付（空格 / + / 逗号分隔）</label>
-          <input type="text" id="smart" inputmode="text" placeholder="例: 59.5 100" autocomplete="off">
+          <input type="text" id="smart" inputmode="text" placeholder="例如: 59.5 100" autocomplete="off">
         </div>
       </div>
 
-      <div id="tag-bar" class="tag-bar">
-        <span>标签：</span>
+      <div class="tag-bar">
+        <span style="font-weight:600">标签</span>
         <label class="tag-opt"><input type="radio" name="tag" value="shopping" checked>🛒 购物</label>
         <label class="tag-opt"><input type="radio" name="tag" value="dining">🍜 餐饮</label>
         <label class="tag-opt"><input type="radio" name="tag" value="travel">🚗 出行</label>
@@ -63,7 +66,10 @@
 
     <!-- ═══════ 2. Results ═══════ -->
     <section id="result-area" class="result-area" hidden>
-      <div class="card-title">结算方案</div>
+      <div class="section-title">
+        <span>结算方案</span>
+        <span id="plan-count" style="font-size:.75rem;font-weight:400;color:var(--text-muted)"></span>
+      </div>
 
       <div id="balance-bar" class="balance-bar"></div>
       <div id="plans-container" class="plans-container"></div>
@@ -71,8 +77,8 @@
 
     <!-- ═══════ 3. History ═══════ -->
     <section class="card">
-      <div class="card-title-row">
-        <span class="card-title">计算记录</span>
+      <div class="section-title" style="margin-bottom:16px">
+        <span>计算记录</span>
         <div class="hist-actions">
           <button id="export-json" class="btn-sm">JSON</button>
           <button id="export-csv"  class="btn-sm">CSV</button>
