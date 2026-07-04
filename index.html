@@ -4,53 +4,86 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>个人货币计算器</title>
-  <meta name="description" content="快速计算支付差额的最优货币组合方案">
+  <meta name="description" content="快速计算支付差额的三种最优货币组合方案">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🧮 个人货币计算器</h1>
-      <p class="subtitle">输入商品价格与支付金额，自动计算结算差额的最优货币组合</p>
-    </header>
 
-    <main>
-      <form id="calc-form" class="calc-form">
-        <div class="field">
-          <label for="price">商品价格 (¥)</label>
-          <input type="number" id="price" step="0.01" min="0" placeholder="例如 59.5" required autofocus>
+  <!-- ═══════ Section 1: Header & Input ═══════ -->
+  <header class="app-header">
+    <div class="container">
+      <h1>🧮 个人货币计算器</h1>
+      <p class="subtitle">输入商品价格与支付金额，自动生成结算差额的三种最优组合方案</p>
+    </div>
+  </header>
+
+  <!-- ═══════ Section 2: Calculator ═════════════ -->
+  <main class="app-main">
+    <div class="container">
+      <form id="calc-form" class="calc-card" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="price">商品价格 <span class="unit">¥</span></label>
+            <div class="input-wrap">
+              <span class="input-prefix">¥</span>
+              <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="7" autofocus>
+            </div>
+          </div>
+          <div class="field">
+            <label for="paid">支付金额 <span class="unit">¥</span></label>
+            <div class="input-wrap">
+              <span class="input-prefix">¥</span>
+              <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="7">
+            </div>
+          </div>
         </div>
-        <div class="field">
-          <label for="paid">支付金额 (¥)</label>
-          <input type="number" id="paid" step="0.01" min="0" placeholder="例如 100" required>
-        </div>
-        <button type="submit" id="calc-btn">计算</button>
+        <div class="form-hint">ⓘ 金额范围 ¥0.01 ~ ¥1,000.00</div>
+        <button type="submit" id="calc-btn">开始计算</button>
       </form>
 
-      <!-- Result panel -->
-      <div id="result" class="result" hidden>
-        <div class="result-summary">
-          <span class="result-label">支付差额</span>
-          <span class="result-value" id="balance-display">¥0.00</span>
-          <span class="result-count" id="count-display">共 0 张/枚</span>
+      <!-- ── Results ──────────────────────────── -->
+      <div id="result-area" class="result-area" hidden></div>
+    </div>
+  </main>
+
+  <!-- ═══════ Section 3: Usage Guide ════════════ -->
+  <footer class="app-footer">
+    <div class="container">
+      <h2>使用说明</h2>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <span class="guide-icon">①</span>
+          <div>
+            <strong>输入金额</strong>
+            <p>在"商品价格"栏输入物品价格，在"支付金额"栏输入你付给店主的钱。</p>
+          </div>
         </div>
-        <table id="unit-table">
-          <thead>
-            <tr><th>面额</th><th>数量</th></tr>
-          </thead>
-          <tbody id="unit-tbody"></tbody>
-        </table>
-        <div id="remainder-warn" class="remainder-warn" hidden>
-          ⚠️ 有 <span id="remainder-amount">0</span> 元无法用现有面额精确结算
+        <div class="guide-item">
+          <span class="guide-icon">②</span>
+          <div>
+            <strong>点击计算</strong>
+            <p>系统自动计算差额，并给出三套不同的最优货币组合方案供选择。</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-icon">③</span>
+          <div>
+            <strong>选择方案</strong>
+            <p>根据手头现有的货币面额，从三种方案中选择最方便执行的一套。</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <span class="guide-icon">④</span>
+          <div>
+            <strong>应用场景</strong>
+            <p>日常购物结算、小摊贩快速找补、自用记账核对，均可使用。</p>
+          </div>
         </div>
       </div>
-    </main>
-
-    <footer>
-      <p>当前货币体系：人民币 (¥) · 面额 ¥100 / 50 / 20 / 10 / 5 / 1 / 0.5 / 0.1 / 0.05 / 0.01</p>
-    </footer>
-  </div>
+      <p class="footer-note">当前货币体系：人民币 (¥) · 面额 ¥100 / 50 / 20 / 10 / 5 / 1 / 0.5 / 0.1 / 0.05 / 0.01</p>
+    </div>
+  </footer>
 
   <script type="module" src="app.js"></script>
 </body>
