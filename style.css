@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   PersonalMoneyCalc — 个人货币计算器
+   PersonalMoneyCalc v3 — styles
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Reset & Variables ──────────────────────────────────────────────────── */
+/* ── Reset & vars ──────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -11,18 +11,21 @@
   --primary:       #2563eb;
   --primary-hover: #1d4ed8;
   --primary-light: #dbeafe;
+  --primary-dark:  #1e40af;
   --text:          #1e293b;
   --text-secondary:#64748b;
   --text-muted:    #94a3b8;
   --border:        #e2e8f0;
   --success:       #16a34a;
   --warn:          #d97706;
+  --error:         #dc2626;
+  --error-light:   #fef2f2;
   --radius-sm:     8px;
   --radius:        14px;
   --radius-lg:     20px;
   --shadow-sm:     0 1px 2px rgba(0,0,0,.05);
   --shadow:        0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-lg:     0 4px 12px rgba(0,0,0,.1);
+  --shadow-lg:     0 4px 16px rgba(0,0,0,.1);
   --transition:    0.25s cubic-bezier(.4,0,.2,1);
 }
 
@@ -42,47 +45,83 @@ body {
    Section 1 — Header
    ═══════════════════════════════════════════════════════════════════════════ */
 .app-header {
-  padding: 36px 0 24px;
+  padding: 28px 0 20px;
   text-align: center;
 }
-.app-header h1 {
-  font-size: 1.65rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-.subtitle {
-  color: var(--text-secondary);
-  font-size: .9rem;
-  margin-top: 6px;
-}
+.app-header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+.subtitle { color: var(--text-secondary); font-size: .85rem; margin-top: 4px; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Section 2 — Calculator
    ═══════════════════════════════════════════════════════════════════════════ */
-.app-main { flex: 1; padding-bottom: 32px; }
+.app-main { flex: 1; padding-bottom: 24px; }
 
-/* ── Input Card ─────────────────────────────────────────────────────────── */
+/* ── Currency selector ─────────────────────────────────────────────────── */
+.currency-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.currency-bar label {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.currency-bar select {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: .92rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border .2s;
+  appearance: auto;
+}
+.currency-bar select:focus { border-color: var(--primary); }
+
+/* ── Custom editor ─────────────────────────────────────────────────────── */
+.custom-editor {
+  margin-bottom: 18px;
+}
+.custom-editor label {
+  display: block;
+  font-size: .78rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.custom-editor input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: .9rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border .2s;
+}
+.custom-editor input:focus { border-color: var(--primary); }
+
+/* ── Input card ────────────────────────────────────────────────────────── */
 .calc-card {
   background: var(--surface);
-  padding: 28px;
+  padding: 24px 24px 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
-.form-row {
-  display: flex;
-  gap: 16px;
-}
+.form-row { display: flex; gap: 14px; }
 .form-row .field { flex: 1; }
 
 .field label {
   display: block;
-  font-size: .85rem;
+  font-size: .82rem;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   color: var(--text-secondary);
 }
-.field label .unit { color: var(--text-muted); font-weight: 400; }
 
 .input-wrap {
   position: relative;
@@ -91,16 +130,17 @@ body {
 }
 .input-prefix {
   position: absolute;
-  left: 14px;
+  left: 13px;
   color: var(--text-muted);
   font-size: 1rem;
   pointer-events: none;
   z-index: 1;
+  font-weight: 500;
 }
 .field input {
   width: 100%;
-  padding: 12px 14px 12px 30px;
-  font-size: 1.1rem;
+  padding: 11px 13px 11px 28px;
+  font-size: 1.05rem;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   outline: none;
@@ -109,189 +149,196 @@ body {
 }
 .field input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
 }
 .field input::placeholder { color: var(--text-muted); }
 .field input.error {
-  border-color: #dc2626;
+  border-color: var(--error);
   box-shadow: 0 0 0 3px rgba(220,38,38,.12);
 }
 
 .form-hint {
-  font-size: .78rem;
+  font-size: .75rem;
   color: var(--text-muted);
-  margin-top: 8px;
-  margin-bottom: 16px;
+  margin-top: 10px;
 }
 
-#calc-btn {
-  width: 100%;
-  padding: 14px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #fff;
-  background: var(--primary);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--transition), transform .15s, box-shadow var(--transition);
+/* ── Guide prompt (empty state) ────────────────────────────────────────── */
+.guide-prompt {
+  margin-top: 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .9rem;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+  border: 1.5px dashed var(--border);
 }
-#calc-btn:hover { background: var(--primary-hover); box-shadow: var(--shadow-lg); }
-#calc-btn:active { transform: scale(.98); }
-#calc-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.guide-prompt span:first-child { font-size: 1.4rem; }
 
-/* ── Result Area ────────────────────────────────────────────────────────── */
+/* ── Result area ───────────────────────────────────────────────────────── */
 .result-area {
-  margin-top: 24px;
+  margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
-/* Balance summary bar */
+/* ── Balance bar ───────────────────────────────────────────────────────── */
 .balance-bar {
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 20px 24px;
+  padding: 18px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  animation: fadeSlide .35s ease-out;
+  animation: fadeSlide .3s ease-out;
 }
-.balance-bar .label { font-size: .85rem; color: var(--text-secondary); }
+.balance-bar .label { font-size: .8rem; color: var(--text-secondary); }
 .balance-bar .value {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--primary);
 }
+.currency-tag {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
 
-/* Plan card */
+/* ── Plan cards ────────────────────────────────────────────────────────── */
 .plan-card {
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  animation: fadeSlide .4s ease-out;
+  animation: fadeSlide .35s ease-out both;
 }
-.plan-card:nth-child(2) { animation-delay: .05s; }
-.plan-card:nth-child(3) { animation-delay: .1s; }
-.plan-card:nth-child(4) { animation-delay: .15s; }
+.plan-card:first-of-type {
+  border: 2px solid var(--primary);
+  box-shadow: var(--shadow-lg);
+}
 
 .plan-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
+  gap: 10px;
+  padding: 14px 20px;
   background: var(--primary-light);
   border-bottom: 1px solid #bfdbfe;
+  flex-wrap: wrap;
 }
 .plan-header .plan-name {
   font-weight: 700;
-  font-size: 1rem;
-  color: var(--primary);
+  font-size: .95rem;
+  color: var(--primary-dark);
 }
-.plan-header .plan-meta {
+.plan-rank {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(37,99,235,.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.plan-meta {
   margin-left: auto;
-  font-size: .8rem;
+  font-size: .78rem;
   color: var(--text-secondary);
 }
-.plan-header .plan-meta span { margin-left: 12px; }
+.plan-meta span { margin-left: 10px; }
 
-.plan-body {
-  padding: 16px 24px;
-}
+.plan-body { padding: 14px 20px 16px; }
 
 .plan-unit-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 .plan-unit-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   background: var(--bg);
   border-radius: 6px;
-  padding: 6px 12px;
-  font-size: .9rem;
+  padding: 5px 10px;
+  font-size: .85rem;
   font-weight: 600;
 }
 .plan-unit-item .count {
   color: var(--primary);
   font-weight: 800;
-  min-width: 1.2em;
+  min-width: 1.1em;
   text-align: right;
 }
-.plan-unit-item .label {
-  color: var(--text);
+
+/* ── Details (reason + scenario) ───────────────────────────────────────── */
+.plan-detail {
+  margin-top: 10px;
+  font-size: .82rem;
+  color: var(--text-secondary);
+}
+.plan-detail summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: .8rem;
+  padding: 4px 0;
+}
+.plan-detail summary:hover { opacity: .8; }
+.plan-reason, .plan-scenario {
+  margin-top: 6px;
+  line-height: 1.6;
+  padding-left: 4px;
 }
 
-/* ── No-result states ──────────────────────────────────────────────────── */
+/* ── Result message (exact/short/invalid) ──────────────────────────────── */
 .result-msg {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 32px 24px;
+  padding: 28px 24px;
   text-align: center;
   color: var(--text-secondary);
-  font-size: .95rem;
+  font-size: .92rem;
   animation: fadeSlide .3s ease-out;
 }
-.result-msg .icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+.result-msg .icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
 .result-msg .strong { font-weight: 600; color: var(--text); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Section 3 — Usage Guide (Footer)
+   Section 3 — Footer / Guide
    ═══════════════════════════════════════════════════════════════════════════ */
 .app-footer {
   background: var(--surface);
   border-top: 1px solid var(--border);
-  padding: 32px 0 24px;
+  padding: 28px 0 22px;
   margin-top: auto;
 }
-.app-footer h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text);
-}
+.app-footer h2 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
 
-.guide-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .guide-item {
-  display: flex;
-  gap: 12px;
-  padding: 14px;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
+  display: flex; gap: 10px; padding: 12px;
+  background: var(--bg); border-radius: var(--radius-sm);
 }
-.guide-icon {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--primary);
-  flex-shrink: 0;
-  width: 28px;
-  text-align: center;
-}
-.guide-item strong {
-  display: block;
-  font-size: .85rem;
-  margin-bottom: 2px;
-}
-.guide-item p {
-  font-size: .8rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
+.guide-icon { font-size: 1.1rem; font-weight: 700; color: var(--primary); flex-shrink: 0; width: 26px; text-align: center; }
+.guide-item strong { display: block; font-size: .82rem; margin-bottom: 2px; }
+.guide-item p { font-size: .78rem; color: var(--text-secondary); line-height: 1.5; }
 
 .footer-note {
-  margin-top: 20px;
-  font-size: .75rem;
+  margin-top: 18px;
+  font-size: .72rem;
   color: var(--text-muted);
   text-align: center;
 }
@@ -300,27 +347,27 @@ body {
    Animations
    ═══════════════════════════════════════════════════════════════════════════ */
 @keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Responsive
+   Responsive — mobile first
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 560px) {
-  .form-row { flex-direction: column; gap: 12px; }
-  .app-header { padding: 24px 0 16px; }
-  .app-header h1 { font-size: 1.35rem; }
-  .calc-card { padding: 20px; }
-  .balance-bar .value { font-size: 1.4rem; }
-  .plan-header { flex-wrap: wrap; }
+  .form-row { flex-direction: column; gap: 10px; }
+  .app-header { padding: 22px 0 14px; }
+  .app-header h1 { font-size: 1.25rem; }
+  .calc-card { padding: 18px 16px; }
+  .balance-bar .value { font-size: 1.3rem; }
+  .plan-header { gap: 6px; }
+  .plan-meta span { margin-left: 6px; }
   .guide-grid { grid-template-columns: 1fr; }
-  .plan-body { padding: 12px 16px; }
-  .plan-unit-item { font-size: .8rem; padding: 4px 10px; }
+  .guide-prompt { padding: 18px 16px; font-size: .82rem; }
 }
 
 @media (max-width: 400px) {
   .container { padding: 0 12px; }
-  .field input { font-size: 1rem; }
-  #calc-btn { padding: 12px; }
+  .field input { font-size: .95rem; padding: 10px 12px 10px 26px; }
+  .plan-body { padding: 10px 14px; }
 }

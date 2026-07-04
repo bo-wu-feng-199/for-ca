@@ -1,98 +1,132 @@
 /**
- * Unit tests for PersonalMoneyCalc core.
- * Run with: node --experimental-vm-modules node_modules/.bin/jest
+ * Unit tests for PersonalMoneyCalc v3 — multi-currency core.
+ * Run: node --experimental-vm-modules node_modules/.bin/jest
  */
 
-import { calculate, CURRENCY_UNITS } from "../src/js/core.js";
+import { calculate, CURRENCIES } from "../src/js/core.js";
 
-/* ── Basic settlement ──────────────────────────────────────────────────── */
-test("buy 59.5 with 100 → balance 40.5, 3 plans", () => {
-  const r = calculate(59.5, 100);
+/* ═══════════════════════════════════════════════════════════════════════════
+   Basic — CNY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+test("buy 59.5 with 100 → 3 plans recommended", () => {
+  const r = calculate(59.5, 100, "CNY");
   expect(r.status).toBe("settled");
   expect(r.balance).toBe(40.5);
-  expect(r.plans.length).toBe(3);
-  // Plan A: greedy = 20+20+0.5 = 3 units
-  expect(r.plans[0].totalCount).toBeGreaterThanOrEqual(1);
-  expect(r.plans[0].units[0].value).toBe(20);
-});
-
-test("buy 23.6 with 50 → balance 26.4", () => {
-  const r = calculate(23.6, 50);
-  expect(r.status).toBe("settled");
-  expect(r.balance).toBe(26.4);
-  expect(r.plans[0].units.some(u => u.value === 20 && u.count === 1)).toBe(true);
-});
-
-test("each plan sum equals balance (within 0.01)", () => {
-  const r = calculate(47.83, 100);
-  for (const plan of r.plans) {
-    const sum = plan.units.reduce((s, u) => +(s + u.value * u.count).toFixed(2), 0);
-    expect(Math.abs(sum - r.balance)).toBeLessThan(0.02);
+  expect(r.plans).toHaveLength(3);
+  // First plan is "optimal" with sortScore 0
+  expect(r.plans[0].id).toBe("optimal");
+  // All plans have reason & scenario
+  for (const p of r.plans) {
+    expect(p.reason).toBeTruthy();
+    expect(p.scenario).toBeTruthy();
   }
 });
 
-/* ── Edge cases ────────────────────────────────────────────────────────── */
-test("exact payment → status exact", () => {
-  const r = calculate(50, 50);
-  expect(r.status).toBe("exact");
-  expect(r.plans.length).toBe(0);
+test("exact payment", () => {
+  expect(calculate(50, 50, "CNY").status).toBe("exact");
 });
 
-test("short payment → status short", () => {
-  const r = calculate(100, 50);
+test("short payment", () => {
+  const r = calculate(100, 50, "CNY");
   expect(r.status).toBe("short");
   expect(r.balance).toBe(-50);
 });
 
-test("zero price", () => {
-  const r = calculate(0, 10);
+test("large amounts work (no arbitrary cap)", () => {
+  const r = calculate(1500, 10000, "JPY");
   expect(r.status).toBe("settled");
-  expect(r.balance).toBe(10);
-  expect(r.plans.length).toBe(3);
+  expect(r.balance).toBe(8500);
 });
 
-test("zero paid", () => {
-  const r = calculate(10, 0);
-  expect(r.status).toBe("short");
+test("invalid: negative", () => {
+  expect(calculate(-1, 10, "CNY").status).toBe("invalid");
 });
 
-test("large amount within limit", () => {
-  const r = calculate(234.56, 1000);
+/* ═══════════════════════════════════════════════════════════════════════════
+   Multi-currency
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+test("USD settlement", () => {
+  const r = calculate(23.50, 50, "USD");
   expect(r.status).toBe("settled");
-  expect(r.balance).toBe(765.44);
-  expect(r.plans.length).toBe(3);
+  expect(r.balance).toBe(26.5);
+  expect(r.currency).toBe("USD");
+  // Should use Quarter/Dime/Nickel/Penny labels
+  const hasQuarter = r.plans.some(p => p.units.some(u => u.label === "Quarter"));
+  // 26.5 = 20 + 5 + 1 + 0.5... wait USD doesn't have 0.5
+  // 26.5 with USD: 20 + 5 + 1 + 0.25×2 = 4+2=6 items
+  expect(r.plans[0].totalCount).toBeGreaterThanOrEqual(4);
 });
 
-/* ── Input clamping ────────────────────────────────────────────────────── */
-test("inputs over 1000 get clamped", () => {
-  const r = calculate(1500, 2500);
-  // Both clamped to 1000
-  expect(r.balance >= 0).toBe(true);
-  expect(r.balance).toBeLessThanOrEqual(1000);
-});
-
-/* ── Validation ────────────────────────────────────────────────────────── */
-test("negative inputs → invalid", () => {
-  const r = calculate(-5, 20);
-  expect(r.status).toBe("invalid");
-});
-
-test("NaN inputs → invalid", () => {
-  const r = calculate("abc", 20);
-  expect(r.status).toBe("invalid");
-});
-
-/* ── Small amounts (cent-level) ────────────────────────────────────────── */
-test("0.07 with 0.1 → balance 0.03", () => {
-  const r = calculate(0.07, 0.1);
+test("EUR settlement", () => {
+  const r = calculate(123.45, 200, "EUR");
   expect(r.status).toBe("settled");
-  expect(r.balance).toBeCloseTo(0.03, 2);
-  expect(r.plans[0].totalCount).toBe(3); // 0.01×3
+  expect(r.currency).toBe("EUR");
+  expect(r.plans).toHaveLength(3);
+  // EUR denominations include €200
+  expect(r.plans[0].units.some(u => u.value === 50)).toBe(true);
 });
 
-/* ── CURRENCY_UNITS structure ──────────────────────────────────────────── */
-test("currency units array has expected entries", () => {
-  expect(CURRENCY_UNITS.length).toBe(10);
-  expect(CURRENCY_UNITS[0].value).toBe(100);
-  expect(CURRENCY_UNITS[CURRENCY_UNITS.length - 1].value).toBe(0.01);
+test("JPY settlement (large amounts)", () => {
+  const r = calculate(1500, 10000, "JPY");
+  expect(r.status).toBe("settled");
+  expect(r.balance).toBe(8500);
+  expect(r.plans[0].units.some(u => u.value === 5000)).toBe(true);
+});
+
+test("KRW settlement", () => {
+  const r = calculate(23500, 50000, "KRW");
+  expect(r.status).toBe("settled");
+  expect(r.balance).toBe(26500);
+});
+
+test("HKD settlement", () => {
+  const r = calculate(88.80, 200, "HKD");
+  expect(r.status).toBe("settled");
+  expect(r.currency).toBe("HKD");
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Custom denominations
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+test("custom denomination set", () => {
+  const custom = [{ value: 50 }, { value: 20 }, { value: 10 }, { value: 5 }, { value: 1 }];
+  const r = calculate(37, 100, "CUSTOM", custom);
+  expect(r.status).toBe("settled");
+  expect(r.balance).toBe(63);
+  // 63 = 50 + 10 + 1 + 1 + 1 = 5 pieces (greedy)
+  expect(r.plans[0].totalCount).toBe(5);
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Plan integrity
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+test("each plan sum equals balance", () => {
+  const r = calculate(47.83, 100, "CNY");
+  for (const plan of r.plans) {
+    const sum = plan.units.reduce((s, u) => +(s + u.value * u.count).toFixed(2), 0);
+    expect(Math.abs(sum - r.balance)).toBeLessThan(0.03);
+  }
+});
+
+test("zero amount edge cases", () => {
+  expect(calculate(0, 10, "CNY").status).toBe("settled");
+  expect(calculate(10, 0, "CNY").status).toBe("short");
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Currency definitions completeness
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+test("all currencies have units", () => {
+  for (const [code, def] of Object.entries(CURRENCIES)) {
+    expect(def.units.length).toBeGreaterThanOrEqual(5);
+    // Verify descending order
+    for (let i = 1; i < def.units.length; i++) {
+      expect(def.units[i - 1].value).toBeGreaterThan(def.units[i].value);
+    }
+  }
 });

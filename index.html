@@ -4,84 +4,97 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>个人货币计算器</title>
-  <meta name="description" content="快速计算支付差额的三种最优货币组合方案">
+  <meta name="description" content="多币种支付差额最优组合计算器，支持 7 大货币体系与自定义面额">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ═══════ Section 1: Header & Input ═══════ -->
+  <!-- ═════ Section 1: Header & Input ═══════════════════════════════════ -->
   <header class="app-header">
     <div class="container">
       <h1>🧮 个人货币计算器</h1>
-      <p class="subtitle">输入商品价格与支付金额，自动生成结算差额的三种最优组合方案</p>
+      <p class="subtitle">输入价格与支付金额，实时生成推荐排序的结算方案</p>
     </div>
   </header>
 
-  <!-- ═══════ Section 2: Calculator ═════════════ -->
+  <!-- ═════ Section 2: Calculator ═══════════════════════════════════════ -->
   <main class="app-main">
     <div class="container">
-      <form id="calc-form" class="calc-card" novalidate>
+
+      <!-- ── Input card ─────────────────────────────────────────────── -->
+      <div class="calc-card">
+        <!-- Currency selector -->
+        <div class="currency-bar">
+          <label for="currency-select">货币体系</label>
+          <select id="currency-select">
+            <option value="CNY">🇨🇳 人民币 (CNY)</option>
+            <option value="USD">🇺🇸 US Dollar (USD)</option>
+            <option value="EUR">🇪🇺 Euro (EUR)</option>
+            <option value="GBP">🇬🇧 Pound Sterling (GBP)</option>
+            <option value="JPY">🇯🇵 Japanese Yen (JPY)</option>
+            <option value="KRW">🇰🇷 South Korean Won (KRW)</option>
+            <option value="HKD">🇭🇰 Hong Kong Dollar (HKD)</option>
+            <option value="CUSTOM">✏️ 自定义</option>
+          </select>
+        </div>
+
+        <!-- Custom units editor (hidden by default) -->
+        <div id="custom-editor" class="custom-editor" hidden>
+          <label>自定义面额（逗号分隔，从大到小）</label>
+          <input type="text" id="custom-units" placeholder="例: 100,50,20,10,5,1,0.5,0.1">
+        </div>
+
         <div class="form-row">
           <div class="field">
-            <label for="price">商品价格 <span class="unit">¥</span></label>
+            <label for="price">商品价格</label>
             <div class="input-wrap">
-              <span class="input-prefix">¥</span>
+              <span class="input-prefix" id="price-prefix">¥</span>
               <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="7" autofocus>
             </div>
           </div>
           <div class="field">
-            <label for="paid">支付金额 <span class="unit">¥</span></label>
+            <label for="paid">支付金额</label>
             <div class="input-wrap">
-              <span class="input-prefix">¥</span>
+              <span class="input-prefix" id="paid-prefix">¥</span>
               <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="7">
             </div>
           </div>
         </div>
-        <div class="form-hint">ⓘ 金额范围 ¥0.01 ~ ¥1,000.00</div>
-        <button type="submit" id="calc-btn">开始计算</button>
-      </form>
+        <div class="form-hint" id="form-hint">ⓘ 金额范围 ¥0.01 ~ ¥1,000.00</div>
+      </div>
 
-      <!-- ── Results ──────────────────────────── -->
+      <!-- ── Guide prompt (visible when no input) ──────────────────── -->
+      <div id="guide-prompt" class="guide-prompt">
+        <span>💡</span>
+        <span>在上方输入商品价格和支付金额，系统将自动计算并推荐最优结算方案</span>
+      </div>
+
+      <!-- ── Result area ───────────────────────────────────────────── -->
       <div id="result-area" class="result-area" hidden></div>
+
     </div>
   </main>
 
-  <!-- ═══════ Section 3: Usage Guide ════════════ -->
+  <!-- ═════ Section 3: Usage Guide ═════════════════════════════════════ -->
   <footer class="app-footer">
     <div class="container">
-      <h2>使用说明</h2>
+      <h2>📖 使用说明</h2>
       <div class="guide-grid">
-        <div class="guide-item">
-          <span class="guide-icon">①</span>
-          <div>
-            <strong>输入金额</strong>
-            <p>在"商品价格"栏输入物品价格，在"支付金额"栏输入你付给店主的钱。</p>
-          </div>
+        <div class="guide-item"><span class="guide-icon">①</span>
+          <div><strong>选择货币</strong><p>顶部下拉框可选 7 种货币体系，或选"自定义"输入自己的面额列表。</p></div>
         </div>
-        <div class="guide-item">
-          <span class="guide-icon">②</span>
-          <div>
-            <strong>点击计算</strong>
-            <p>系统自动计算差额，并给出三套不同的最优货币组合方案供选择。</p>
-          </div>
+        <div class="guide-item"><span class="guide-icon">②</span>
+          <div><strong>输入金额</strong><p>在商品价格和支付金额栏分别输入数字，实时计算无需点击按钮。</p></div>
         </div>
-        <div class="guide-item">
-          <span class="guide-icon">③</span>
-          <div>
-            <strong>选择方案</strong>
-            <p>根据手头现有的货币面额，从三种方案中选择最方便执行的一套。</p>
-          </div>
+        <div class="guide-item"><span class="guide-icon">③</span>
+          <div><strong>查看推荐</strong><p>系统输出三套方案并按推荐度排序，每套附带理由和适用场景说明。</p></div>
         </div>
-        <div class="guide-item">
-          <span class="guide-icon">④</span>
-          <div>
-            <strong>应用场景</strong>
-            <p>日常购物结算、小摊贩快速找补、自用记账核对，均可使用。</p>
-          </div>
+        <div class="guide-item"><span class="guide-icon">④</span>
+          <div><strong>多币种</strong><p>切换货币体系后自动适配对应面额，支持 USD/EUR/GBP/JPY/KRW/HKD。</p></div>
         </div>
       </div>
-      <p class="footer-note">当前货币体系：人民币 (¥) · 面额 ¥100 / 50 / 20 / 10 / 5 / 1 / 0.5 / 0.1 / 0.05 / 0.01</p>
+      <p class="footer-note">PersonalMoneyCalc v3 · 多币种差额结算 · 开源 MIT</p>
     </div>
   </footer>
 
