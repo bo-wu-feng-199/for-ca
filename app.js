@@ -1,5 +1,5 @@
 /**
- * CashCalc v3.2 — UI controller (USD).
+ * CashCalc — UI controller (mass-market edition).
  */
 
 import { calculate, parseInput } from "./src/js/core.js";
@@ -7,30 +7,31 @@ import { calculate, parseInput } from "./src/js/core.js";
 const MAX_VAL = 1000;
 const MAX_HIST = 10;
 const DB = 300;
-const KEY_HIST = "cc32_history";
-const KEY_THEME = "cc32_theme";
-const LABELS = { optimal: "Optimal", balanced: "Balanced", practical: "Practical" };
+const KEY_HIST = "cc_history";
+const KEY_THEME = "cc_theme";
+const LABELS = { optimal: "Best Plan", balanced: "Balanced", practical: "Easy Change" };
 const TAG_LABELS = {
   shopping: "🛒 Shopping", dining: "🍜 Dining", travel: "🚗 Travel",
   cashier: "💰 Cashier", other: "📋 Other",
 };
+const SYM = "$";
 
+/* ── DOM ───────────────────────────────────────────────────────────────── */
 const themeBtn   = document.getElementById("theme-btn");
 const priceInp   = document.getElementById("price");
 const paidInp    = document.getElementById("paid");
 const smartInp   = document.getElementById("smart");
 const errMsg     = document.getElementById("error-msg");
+const resultSec  = document.getElementById("result-section");
 const resultArea = document.getElementById("result-area");
-const balanceBar = document.getElementById("balance-bar");
-const plansCtn   = document.getElementById("plans-container");
 const histList   = document.getElementById("history-list");
 const clearBtn   = document.getElementById("clear-all");
 const expJson    = document.getElementById("export-json");
 const expCsv     = document.getElementById("export-csv");
 const expMd      = document.getElementById("export-md");
-const tabs       = document.querySelectorAll(".tab");
 
-const SYM = "$";
+const modeRadios = document.querySelectorAll('input[name="imode"]');
+
 let history = loadHist();
 let dtimer;
 let mode = "dual";
@@ -52,15 +53,13 @@ themeBtn.addEventListener("click", () => {
   const cur = document.documentElement.dataset.theme;
   setTheme(cur === "dark" ? "light" : "dark");
 });
-
 setTheme(loadTheme());
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Input mode
+   Input mode switching
    ═══════════════════════════════════════════════════════════════════════════ */
-tabs.forEach(t => t.addEventListener("click", () => {
-  tabs.forEach(x => x.classList.toggle("tab-active", x === t));
-  mode = t.dataset.mode;
+modeRadios.forEach(r => r.addEventListener("change", () => {
+  mode = r.value;
   document.getElementById("input-dual").hidden = mode !== "dual";
   document.getElementById("input-smart").hidden = mode !== "smart";
   clearError();
@@ -120,7 +119,7 @@ function run() {
   }
 
   if (price < 0 || paid < 0 || price > MAX_VAL || paid > MAX_VAL) {
-    showError(`Amount range ${SYM}0.01 ~ ${SYM}${MAX_VAL.toLocaleString()}`);
+    showError(`Amount range ${SYM}0.01 – ${SYM}${MAX_VAL.toLocaleString()}`);
     hideResult();
     return;
   }
@@ -129,60 +128,63 @@ function run() {
   showResult(r, price, paid);
 }
 
-function hideResult() { resultArea.hidden = true; }
+function hideResult() { resultSec.hidden = true; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Render results
+   Render — big cards, big numbers
    ═══════════════════════════════════════════════════════════════════════════ */
 function showResult(r, price, paid) {
-  resultArea.hidden = false;
+  resultSec.hidden = false;
 
   if (r.status === "short") {
-    balanceBar.innerHTML = "";
-    plansCtn.innerHTML = `<div class="result-msg"><span class="s">Insufficient payment</span> — short by ${SYM}${Math.abs(r.balance).toFixed(2)}</div>`;
+    resultArea.innerHTML = `<div class="result-msg"><span class="s">Not enough</span> — short by ${SYM}${Math.abs(r.balance).toFixed(2)}</div>`;
     return;
   }
   if (r.status === "exact") {
-    balanceBar.innerHTML = "";
-    plansCtn.innerHTML = `<div class="result-msg"><span class="s">Exact amount</span> — no change needed</div>`;
+    resultArea.innerHTML = `<div class="result-msg"><span class="s">Exact amount</span> — no change needed</div>`;
     return;
   }
   if (r.status === "invalid") {
-    showError("Enter valid amounts");
+    showError("Please enter valid amounts");
     hideResult();
     return;
   }
 
   saveHist({ price, paid, balance: r.balance, planType: r.plans[0].id, tag: getTag() });
 
-  balanceBar.innerHTML = `
-    <div><div class="lbl">Balance</div><div class="val">${SYM}${r.balance.toFixed(2)}</div></div>
-    <div><span class="tag">${r.plans[0].name} ★</span></div>`;
+  const ranks = ["🥇 Best pick", "🥈 Also good", "🥉 Third option"];
 
-  const icons = ["⭐", "⚖️", "📦"];
-  const ranks = ["★ Recommended", "Alternative", "Alternative"];
+  const hero = `
+    <div class="balance-hero">
+      <div class="lbl">Change to give back</div>
+      <div class="val">${SYM}${r.balance.toFixed(2)}</div>
+      <div class="rec">${r.plans[0].name} — ${r.plans[0].totalCount} piece${r.plans[0].totalCount !== 1 ? "s" : ""}</div>
+    </div>`;
 
-  plansCtn.innerHTML = r.plans.map((p, i) => {
+  const cards = r.plans.map((p, i) => {
     const uhtml = p.units.map(u =>
-      `<span class="unit"><span class="c">${u.count}</span>${u.label}</span>`
+      `<span class="unit-chip"><span class="uc">${u.count}</span>${u.label}</span>`
     ).join("");
+    const featured = i === 0 ? " pc-featured" : "";
     return `
-      <div class="plan">
-        <div class="plan-head">
-          <span>${icons[i]}</span>
-          <span class="nm">${p.name}</span>
-          <span class="rk">${ranks[i]}</span>
-          <span class="mt">
+      <div class="plan-card${featured}">
+        <div class="plan-header">
+          <span>${["⭐","⚖️","📦"][i]}</span>
+          <span class="pn">${p.name}</span>
+          <span class="pr">${ranks[i]}</span>
+          <span class="pm">
             <span>${p.totalCount} piece${p.totalCount !== 1 ? "s" : ""}</span>
             <span>${p.typeCount} type${p.typeCount !== 1 ? "s" : ""}</span>
           </span>
         </div>
         <div class="plan-body">
-          <div class="units">${uhtml}</div>
+          <div class="unit-row">${uhtml}</div>
           <div class="plan-desc">${p.desc}</div>
         </div>
       </div>`;
   }).join("");
+
+  resultArea.innerHTML = hero + `<div class="plans-stack">${cards}</div>`;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -215,9 +217,9 @@ function renderHist() {
     return `
       <div class="hist-entry" data-idx="${i}">
         <div class="hist-body">
-          <div class="hist-row1">
-            <span class="hist-amounts">${SYM}${e.price.toFixed(2)} → ${SYM}${e.paid.toFixed(2)}</span>
-            <span class="hist-diff">${SYM}${e.balance.toFixed(2)}</span>
+          <div class="hist-r1">
+            <span class="hist-am">${SYM}${e.price.toFixed(2)} → ${SYM}${e.paid.toFixed(2)}</span>
+            <span class="hist-df">${SYM}${e.balance.toFixed(2)}</span>
             <span class="hist-plan">${LABELS[e.planType] || e.planType}</span>
             ${tag ? `<span class="hist-tag">${tag}</span>` : ""}
           </div>
@@ -241,9 +243,7 @@ function renderHist() {
   });
 }
 
-clearBtn.addEventListener("click", () => {
-  history = []; persist(); renderHist();
-});
+clearBtn.addEventListener("click", () => { history = []; persist(); renderHist(); });
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Export
