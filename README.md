@@ -1,92 +1,138 @@
-# CashCalc — Personal Cash Calculator (USD)
+# 🧾 Personal Currency Calculator
 
-**Lightweight personal cash calculation & record tool.**  
-Enter item price and amount paid — automatically computes the balance and suggests the optimal USD currency breakdown.
-
-[![CI](https://github.com/bo-wu-feng-199/for-ca/actions/workflows/ci.yml/badge.svg)](https://github.com/bo-wu-feng-199/for-ca/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+A minimal transaction cognition layer for everyday numerical flow.
 
 ---
 
-## Features
+## ▌Abstract
 
-- **Balance settlement** — Enter price & paid; instantly get 3 optimal USD breakdown plans
-- **USD denomination support** — $100 / $50 / $20 / $10 / $5 / $2 / $1 / Quarter / Dime / Nickel / Penny
-- **Real-time calculation** — Pure frontend, no network requests, 300ms debounce
-- **History & export** — Auto-saves last 10 records (localStorage), export to JSON / CSV / Markdown
-- **Theme switcher** — Light & dark mode with CSS variables
-- **Lightweight** — Single HTML page, vanilla JS, no build tools
+This project is not a calculator.
 
----
+It is a micro-transaction interpreter designed to compress human cash reasoning into deterministic structure.
 
-## Usage
+Instead of asking:
 
-### Web
+_"How much should I return?"_
 
-Open `index.html` in a browser, or run:
+It reframes the problem as:
 
-```bash
-npx serve .
-```
-
-### Browser extension
-
-1. Open Chrome/Edge → `chrome://extensions`
-2. Enable **Developer mode**
-3. Click **Load unpacked** → select this project directory
-4. Use the extension icon in the toolbar
+_"How does value decompose under constrained denomination space?"_
 
 ---
 
-## Project Structure
+## ▌Core Idea
+
+Every transaction is treated as a bounded system:
 
 ```
-cashcalc/
-├── index.html          # Main page (SEO optimized)
-├── app.js              # UI controller
-├── style.css           # Styles (light / dark)
-├── manifest.json       # Browser extension manifest
-├── src/js/
-│   └── core.js         # Core calculation engine (USD)
-├── tests/
-│   └── core.test.js    # Unit tests (17 tests)
-├── .github/workflows/
-│   └── ci.yml          # CI config
-└── package.json        # Test dependencies
+Input Space:
+(price, paid)
+
+↓ transformation
+
+Δ = paid - price
+
+↓ decomposition
+
+Δ → discrete denomination vector
 ```
 
----
+The system does not compute answers.
 
-## Core Algorithm
-
-Greedy algorithm: iterates denominations from largest to smallest ($100 → Penny), taking the maximum possible quantity each time.
-
-The USD denomination set is canonical — greedy guarantees the globally optimal (minimum piece) solution.
-
-- Time complexity: **O(n)**, n = number of denominations (fixed at 11)
-- Space complexity: **O(1)**
+It projects value into structured economic primitives.
 
 ---
 
-## SEO & GEO
+## ▌System Behavior Model
 
-- Semantic HTML5 with `role` attributes
-- Open Graph & Twitter Card meta tags
-- JSON‑LD structured data (WebApplication schema)
-- `canonical` URL, `description` & `keywords` meta
-- Accessible form labels and `aria` attributes
+The engine produces three parallel interpretations of the same delta:
+
+**1. Minimal Entropy Path**
+
+A greedy reduction toward least fragmentation.
+
+**2. Balanced Distribution Field**
+
+A stabilized representation across denomination space.
+
+**3. Operational Heuristic Path**
+
+Optimized for real-world execution speed and cognitive ease.
+
+Each output is not a "result", but a strategy of materialization.
 
 ---
 
-## Development
+## ▌Interface Philosophy
 
-```bash
-npm install
-npm test
+The UI is deliberately non-hierarchical.
+
+All states exist simultaneously:
+
+- Input is always active
+- Output is always visible
+- History is always present
+
+No collapse logic. No hidden layers. No secondary navigation.
+
+The system assumes:
+
+_"If a computation exists, it should be visible."_
+
+---
+
+## ▌Design Language
+
+The interface follows a constrained visual grammar:
+
+- monochrome dual-mode system (light / dark)
+- grid-aligned typographic rhythm
+- no ornamental UI elements
+- functional spacing as structure
+- interaction reduced to immediate feedback loops
+
+Influenced by developer-grade minimal systems such as documentation surfaces and terminal-native tools.
+
+---
+
+## ▌Memory Layer
+
+The system maintains a local temporal trace:
+
+- last 10 computations
+- immutable per session entry structure
+- instant replay capability via state rehydration
+
+This creates a shallow but persistent cognitive buffer:
+
+_"Recent financial states remain locally observable."_
+
+---
+
+## ▌Export Layer
+
+Computation history can be externalized into structured artifacts:
+
+- **JSON** (machine truth representation)
+- **CSV** (analytical tabular projection)
+- **Markdown** (human-readable audit form)
+
+This allows the system to transition between:
+
+```
+interface → dataset → document
 ```
 
+without state mutation.
+
 ---
 
-## License
+## ▌Philosophy
 
-MIT
+This project explores a narrow but intentional idea:
+
+reduce transactional cognition into a visible, deterministic structure that requires no interpretation layer.
+
+It is not optimized for complexity.
+
+It is optimized for clarity under constraint.
