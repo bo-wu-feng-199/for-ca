@@ -1,25 +1,68 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en-US" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CashCalc — Personal Cash Calculator</title>
-  <meta name="description" content="Lightweight personal cash calculator — real-time balance breakdown, history, export.">
+
+  <!-- ── Primary Meta ────────────────────────────────────────────────── -->
+  <title>CashCalc — Personal Cash Calculator | USD Change &amp; Balance Tool</title>
+  <meta name="description" content="Free online personal cash calculator for USD. Enter price and amount paid to get 3 optimal change breakdown plans — minimum pieces, balanced, or practical. Real-time calculation, history, and export.">
+  <meta name="keywords" content="cash calculator, USD change calculator, money denomination tool, balance breakdown, cash register helper">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="CashCalc">
+  <link rel="canonical" href="https://for-ca.vercel.app/">
+
+  <!-- ── Open Graph ──────────────────────────────────────────────────── -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://for-ca.vercel.app/">
+  <meta property="og:title" content="CashCalc — Personal Cash Calculator | USD Change &amp; Balance Tool">
+  <meta property="og:description" content="Free online personal cash calculator for USD. Enter price and amount paid to get 3 optimal change breakdown plans.">
+  <meta property="og:image" content="https://for-ca.vercel.app/og-image.png">
+  <meta property="og:locale" content="en_US">
+
+  <!-- ── Twitter Card ────────────────────────────────────────────────── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CashCalc — Personal Cash Calculator | USD Change &amp; Balance Tool">
+  <meta name="twitter:description" content="Free online personal cash calculator for USD. Enter price and amount paid to get 3 optimal change breakdown plans.">
+
+  <!-- ── JSON-LD Schema ──────────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CashCalc",
+    "url": "https://for-ca.vercel.app/",
+    "description": "Free online personal cash calculator for USD. Computes optimal change breakdown — minimum pieces, balanced distribution, or practical arrangement.",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "CashCalc"
+    }
+  }
+  </script>
+
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- ═══════ Top Bar ═══════ -->
-  <header class="topbar">
+  <header class="topbar" role="banner">
     <div class="container topbar-inner">
-      <span class="logo">🧮 CashCalc</span>
-      <span class="sub-logo">Personal Cash Calculator</span>
-      <button id="theme-btn" class="theme-btn" title="Toggle theme">🌙</button>
+      <span class="logo" aria-label="CashCalc logo">🧮 CashCalc</span>
+      <span class="sub-logo">Personal Cash Calculator — USD</span>
+      <button id="theme-btn" class="theme-btn" title="Toggle light / dark theme" aria-label="Toggle theme">🌙</button>
     </div>
   </header>
 
-  <div class="container">
+  <main class="container" role="main">
 
     <!-- ═══════ TWO-COLUMN LAYOUT ═══════ -->
     <div class="layout-split">
@@ -27,38 +70,38 @@
       <!-- ═══ LEFT COLUMN ═══ -->
       <div class="col-left">
 
-        <!-- 1. Input -->
-        <section class="card">
-          <div class="section-title">
+        <!-- 1. Input Section -->
+        <section class="card" aria-label="Amount input">
+          <h2 class="section-title">
             <span>Enter Amount</span>
-            <span class="title-meta">¥0.01 ~ ¥1,000</span>
-          </div>
+            <span class="title-meta">$0.01 ~ $1,000</span>
+          </h2>
 
-          <div class="input-tabs">
-            <button class="tab tab-active" data-mode="dual">Dual Input</button>
-            <button class="tab" data-mode="smart">Smart Input</button>
+          <div class="input-tabs" role="tablist">
+            <button class="tab tab-active" data-mode="dual" role="tab" aria-selected="true">Dual Input</button>
+            <button class="tab" data-mode="smart" role="tab" aria-selected="false">Smart Input</button>
           </div>
 
           <div id="input-dual" class="input-row">
             <div class="field">
-              <label for="price">Item price</label>
-              <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="8" autofocus>
+              <label for="price">Item price ($)</label>
+              <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="8" autofocus aria-describedby="amount-hint">
             </div>
-            <span class="field-arrow">→</span>
+            <span class="field-arrow" aria-hidden="true">→</span>
             <div class="field">
-              <label for="paid">Amount paid</label>
-              <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="8">
+              <label for="paid">Amount paid ($)</label>
+              <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="8" aria-describedby="amount-hint">
             </div>
           </div>
 
           <div id="input-smart" class="input-row" hidden>
             <div class="field full">
               <label for="smart">Price + Paid (space / + / comma separated)</label>
-              <input type="text" id="smart" inputmode="text" placeholder="e.g. 59.5 100" autocomplete="off">
+              <input type="text" id="smart" inputmode="text" placeholder="e.g. 23.50 50" autocomplete="off">
             </div>
           </div>
 
-          <div class="tag-bar">
+          <div id="amount-hint" class="tag-bar">
             <span class="tag-label">Tag</span>
             <label class="tag-opt"><input type="radio" name="tag" value="shopping" checked>🛒 Shopping</label>
             <label class="tag-opt"><input type="radio" name="tag" value="dining">🍜 Dining</label>
@@ -67,30 +110,30 @@
             <label class="tag-opt"><input type="radio" name="tag" value="other">📋 Other</label>
           </div>
 
-          <div id="error-msg" class="error-msg" hidden></div>
+          <div id="error-msg" class="error-msg" hidden role="alert"></div>
         </section>
 
-        <!-- 2. Results -->
-        <section id="result-area" class="result-area" hidden>
-          <div class="section-title">
+        <!-- 2. Results Section -->
+        <section id="result-area" class="result-area" hidden aria-label="Settlement plans">
+          <h2 class="section-title">
             <span>Settlement Plans</span>
             <span id="plan-count" class="title-meta"></span>
-          </div>
+          </h2>
           <div id="balance-bar" class="balance-bar"></div>
           <div id="plans-container" class="plans-container"></div>
         </section>
 
-        <!-- 3. History -->
-        <section class="card">
-          <div class="section-title" style="margin-bottom:16px">
+        <!-- 3. History Section -->
+        <section class="card" aria-label="Calculation history">
+          <h2 class="section-title" style="margin-bottom:16px">
             <span>History</span>
             <div class="hist-actions">
-              <button id="export-json" class="btn-sm">JSON</button>
-              <button id="export-csv"  class="btn-sm">CSV</button>
-              <button id="export-md"   class="btn-sm">MD</button>
-              <button id="clear-all"   class="btn-sm btn-danger">Clear</button>
+              <button id="export-json" class="btn-sm" aria-label="Export as JSON">JSON</button>
+              <button id="export-csv"  class="btn-sm" aria-label="Export as CSV">CSV</button>
+              <button id="export-md"   class="btn-sm" aria-label="Export as Markdown">MD</button>
+              <button id="clear-all"   class="btn-sm btn-danger" aria-label="Clear all history">Clear</button>
             </div>
-          </div>
+          </h2>
           <div id="history-list"></div>
         </section>
 
@@ -99,81 +142,102 @@
       <!-- ═══ RIGHT COLUMN ═══ -->
       <div class="col-right">
 
-        <!-- 4. About × 4 -->
-        <section class="card info-card">
-          <div class="section-title"><span>About</span></div>
+        <!-- 4. About Section -->
+        <section class="card" aria-label="About CashCalc">
+          <h2 class="section-title"><span>About</span></h2>
           <div class="info-grid">
             <div class="info-item">
-              <span class="info-icon">🧮</span>
+              <span class="info-icon" aria-hidden="true">🧮</span>
               <div>
                 <strong>Cash Settlement Tool</strong>
-                <p>Enter item price and amount paid — automatically computes the balance and suggests the optimal currency breakdown.</p>
+                <p>Enter item price and amount paid — automatically computes the balance and suggests the optimal USD currency breakdown.</p>
               </div>
             </div>
             <div class="info-item">
-              <span class="info-icon">⚡</span>
+              <span class="info-icon" aria-hidden="true">⚡</span>
               <div>
                 <strong>Real-time</strong>
                 <p>Calculates instantly as you type (300ms debounce). Three plans — Optimal, Balanced, Practical — generated simultaneously.</p>
               </div>
             </div>
             <div class="info-item">
-              <span class="info-icon">📦</span>
+              <span class="info-icon" aria-hidden="true">📦</span>
               <div>
-                <strong>Lightweight & Offline</strong>
+                <strong>Lightweight &amp; Offline</strong>
                 <p>Pure frontend, no backend. All data stored in localStorage. Works without internet connection.</p>
               </div>
             </div>
             <div class="info-item">
-              <span class="info-icon">📋</span>
+              <span class="info-icon" aria-hidden="true">📋</span>
               <div>
-                <strong>Records & Export</strong>
+                <strong>Records &amp; Export</strong>
                 <p>Auto-saves the last 10 calculations. Export to JSON / CSV / Markdown with one click.</p>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 5. Usage + Notes -->
-        <section class="card">
-          <div class="section-title"><span>Usage & Notes</span></div>
+        <!-- 5. Usage Section -->
+        <section class="card" aria-label="Usage instructions">
+          <h2 class="section-title"><span>Usage</span></h2>
           <div class="usage-notes">
             <div class="step">
-              <span class="step-num">1</span>
+              <span class="step-num" aria-hidden="true">1</span>
               <div>
-                <strong>Enter price & paid</strong>
+                <strong>Enter price &amp; paid</strong>
                 <p>Use dual inputs or the smart single-line mode with space / + / comma separators.</p>
               </div>
             </div>
             <div class="step">
-              <span class="step-num">2</span>
+              <span class="step-num" aria-hidden="true">2</span>
               <div>
                 <strong>Pick a tag</strong>
                 <p>Choose a category (Shopping / Dining / Travel / Cashier / Other) for easy filtering.</p>
               </div>
             </div>
             <div class="step">
-              <span class="step-num">3</span>
+              <span class="step-num" aria-hidden="true">3</span>
               <div>
-                <strong>Review plans & reuse</strong>
+                <strong>Review plans &amp; reuse</strong>
                 <p>All three plans are fully expanded. Click any history entry to auto-fill the inputs.</p>
               </div>
             </div>
             <div class="step">
-              <span class="step-num">4</span>
+              <span class="step-num" aria-hidden="true">4</span>
               <div>
-                <strong>Export & backup</strong>
+                <strong>Export &amp; backup</strong>
                 <p>JSON / CSV / Markdown export. All data stays in your browser — nothing is uploaded.</p>
               </div>
             </div>
           </div>
-          <div class="notes-compact">
-            <div class="note-dot">Max ¥1,000</div>
-            <div class="note-dot">RMB denominations</div>
-            <div class="note-dot">localStorage only</div>
-            <div class="note-dot">Zero backend</div>
-            <div class="note-dot">Dark mode supported</div>
-            <div class="note-dot">For reference only</div>
+        </section>
+
+        <!-- 6. USD Denomination Guide -->
+        <section class="card" aria-label="USD denomination guide">
+          <h2 class="section-title"><span>USD Denominations</span></h2>
+          <div class="denom-guide">
+            <div class="denom-category">
+              <h3 class="denom-cat-title">💵 Bills</h3>
+              <div class="denom-list">
+                <span class="denom-chip chip-bill">$100</span>
+                <span class="denom-chip chip-bill">$50</span>
+                <span class="denom-chip chip-bill">$20</span>
+                <span class="denom-chip chip-bill">$10</span>
+                <span class="denom-chip chip-bill">$5</span>
+                <span class="denom-chip chip-bill">$2</span>
+                <span class="denom-chip chip-bill">$1</span>
+              </div>
+            </div>
+            <div class="denom-category">
+              <h3 class="denom-cat-title">🪙 Coins</h3>
+              <div class="denom-list">
+                <span class="denom-chip chip-coin">Quarter ($0.25)</span>
+                <span class="denom-chip chip-coin">Dime ($0.10)</span>
+                <span class="denom-chip chip-coin">Nickel ($0.05)</span>
+                <span class="denom-chip chip-coin">Penny ($0.01)</span>
+              </div>
+            </div>
+            <p class="denom-note">The greedy algorithm is optimal for all USD denominations. Amounts are rounded to the nearest cent.</p>
           </div>
         </section>
 
@@ -181,11 +245,11 @@
 
     </div><!-- /layout-split -->
 
-  </div>
+  </main>
 
-  <footer class="page-footer">
+  <footer class="page-footer" role="contentinfo">
     <div class="container">
-      <p>CashCalc v3.2 · Pure frontend · All data stored locally</p>
+      <p>CashCalc v3.2 · Pure frontend · <a href="https://github.com/bo-wu-feng-199/for-ca" rel="noopener noreferrer" target="_blank">GitHub</a> · All data stored locally</p>
     </div>
   </footer>
 

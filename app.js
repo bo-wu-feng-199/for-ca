@@ -1,6 +1,5 @@
 /**
- * CashCalc v3.2 — UI controller.
- * Fully expanded · Real-time calc · History · Export · Theme switcher
+ * CashCalc v3.2 — UI controller (USD).
  */
 
 import { calculate, parseInput } from "./src/js/core.js";
@@ -31,6 +30,7 @@ const expCsv     = document.getElementById("export-csv");
 const expMd      = document.getElementById("export-md");
 const tabs       = document.querySelectorAll(".tab");
 
+const SYM = "$";
 let history = loadHist();
 let dtimer;
 let mode = "dual";
@@ -56,7 +56,7 @@ themeBtn.addEventListener("click", () => {
 setTheme(loadTheme());
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Input mode switching
+   Input mode
    ═══════════════════════════════════════════════════════════════════════════ */
 tabs.forEach(t => t.addEventListener("click", () => {
   tabs.forEach(x => x.classList.toggle("tab-active", x === t));
@@ -120,7 +120,7 @@ function run() {
   }
 
   if (price < 0 || paid < 0 || price > MAX_VAL || paid > MAX_VAL) {
-    showError(`Amount range ¥0.01 ~ ¥${MAX_VAL.toLocaleString()}`);
+    showError(`Amount range ${SYM}0.01 ~ ${SYM}${MAX_VAL.toLocaleString()}`);
     hideResult();
     return;
   }
@@ -139,7 +139,7 @@ function showResult(r, price, paid) {
 
   if (r.status === "short") {
     balanceBar.innerHTML = "";
-    plansCtn.innerHTML = `<div class="result-msg"><span class="s">Insufficient payment</span> — short by ¥${Math.abs(r.balance).toFixed(2)}</div>`;
+    plansCtn.innerHTML = `<div class="result-msg"><span class="s">Insufficient payment</span> — short by ${SYM}${Math.abs(r.balance).toFixed(2)}</div>`;
     return;
   }
   if (r.status === "exact") {
@@ -156,7 +156,7 @@ function showResult(r, price, paid) {
   saveHist({ price, paid, balance: r.balance, planType: r.plans[0].id, tag: getTag() });
 
   balanceBar.innerHTML = `
-    <div><div class="lbl">Balance</div><div class="val">¥${r.balance.toFixed(2)}</div></div>
+    <div><div class="lbl">Balance</div><div class="val">${SYM}${r.balance.toFixed(2)}</div></div>
     <div><span class="tag">${r.plans[0].name} ★</span></div>`;
 
   const icons = ["⭐", "⚖️", "📦"];
@@ -216,8 +216,8 @@ function renderHist() {
       <div class="hist-entry" data-idx="${i}">
         <div class="hist-body">
           <div class="hist-row1">
-            <span class="hist-amounts">¥${e.price.toFixed(2)} → ¥${e.paid.toFixed(2)}</span>
-            <span class="hist-diff">¥${e.balance.toFixed(2)}</span>
+            <span class="hist-amounts">${SYM}${e.price.toFixed(2)} → ${SYM}${e.paid.toFixed(2)}</span>
+            <span class="hist-diff">${SYM}${e.balance.toFixed(2)}</span>
             <span class="hist-plan">${LABELS[e.planType] || e.planType}</span>
             ${tag ? `<span class="hist-tag">${tag}</span>` : ""}
           </div>
@@ -279,7 +279,7 @@ expMd.addEventListener("click", () => {
     const t = new Date(e.timestamp);
     const ts = `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()} ${t.getHours()}:${String(t.getMinutes()).padStart(2,"0")}`;
     const tag = TAG_LABELS[e.tag] || "";
-    return `| ¥${e.price.toFixed(2)} | ¥${e.paid.toFixed(2)} | ¥${e.balance.toFixed(2)} | ${LABELS[e.planType] || e.planType} | ${tag} | ${ts} |`;
+    return `| ${SYM}${e.price.toFixed(2)} | ${SYM}${e.paid.toFixed(2)} | ${SYM}${e.balance.toFixed(2)} | ${LABELS[e.planType] || e.planType} | ${tag} | ${ts} |`;
   }).join("\n");
   dl(`# CashCalc Records\n\n${h}${r}\n`, "records.md", "text/markdown");
 });
