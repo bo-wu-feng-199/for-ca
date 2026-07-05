@@ -317,6 +317,40 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   USD Denomination Guide
+   ═══════════════════════════════════════════════════════════════════════════ */
+.denom-guide { display: flex; flex-direction: column; gap: 14px; }
+.denom-category { }
+.denom-cat-title {
+  font-size: .85rem; font-weight: 700; margin-bottom: 8px;
+  color: var(--text);
+}
+.denom-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.denom-chip {
+  display: inline-flex; align-items: center;
+  padding: 5px 12px; border-radius: 8px;
+  font-size: .82rem; font-weight: 600;
+}
+.chip-bill {
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.chip-coin {
+  background: #fef3c7; color: #92400e;
+  border: 1px solid #f59e0b;
+}
+[data-theme="dark"] .chip-coin {
+  background: #451a03; color: #fbbf24;
+  border-color: #b45309;
+}
+.denom-note {
+  font-size: .75rem; color: var(--text-muted);
+  line-height: 1.5; padding-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    Footer
    ═══════════════════════════════════════════════════════════════════════════ */
 .page-footer { border-top: 1px solid var(--border); padding: 18px 0 28px; margin-top: 12px; }

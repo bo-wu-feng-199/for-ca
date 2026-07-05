@@ -1,20 +1,21 @@
 /**
- * CashCalc v3.2 — core engine.
+ * CashCalc v3.2 — core engine (USD).
  */
 
 const EPS = 1e-9;
 
 export const CURRENCY_UNITS = Object.freeze([
-  { value: 100,   label: "¥100" },
-  { value: 50,    label: "¥50"  },
-  { value: 20,    label: "¥20"  },
-  { value: 10,    label: "¥10"  },
-  { value: 5,     label: "¥5"   },
-  { value: 1,     label: "¥1"   },
-  { value: 0.5,   label: "¥0.5" },
-  { value: 0.1,   label: "¥0.1" },
-  { value: 0.05,  label: "¥0.05"},
-  { value: 0.01,  label: "¥0.01"},
+  { value: 100,   label: "$100"     },
+  { value: 50,    label: "$50"      },
+  { value: 20,    label: "$20"      },
+  { value: 10,    label: "$10"      },
+  { value: 5,     label: "$5"       },
+  { value: 2,     label: "$2"       },
+  { value: 1,     label: "$1"       },
+  { value: 0.25,  label: "Quarter"  },
+  { value: 0.10,  label: "Dime"     },
+  { value: 0.05,  label: "Nickel"   },
+  { value: 0.01,  label: "Penny"    },
 ]);
 
 // ── Input parser ──────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ export function greedy(amount, units = CURRENCY_UNITS, cap = Infinity) {
 const DESCRIPTIONS = {
   optimal:   "Takes the largest possible quantity per denomination from top to bottom, ensuring the minimum total pieces for fastest handover.",
   balanced:  "Limits each denomination to 3 units max; excess spills into smaller denominations for a well-distributed mix.",
-  practical: "Skips the smallest coin denominations (¥0.05, ¥0.01) — fewer tiny coins, more convenient in real-world cash transactions.",
+  practical: "Skips Penny and Nickel — fewer tiny coins, more convenient in real-world cash transactions.",
 };
 
 export function calculate(price, paid) {
@@ -75,14 +76,13 @@ export function calculate(price, paid) {
   const strategies = [
     { id: "optimal",   name: "Optimal Plan",     cap: Infinity, filter: null },
     { id: "balanced",  name: "Balanced Plan",    cap: 3,        filter: null },
-    { id: "practical", name: "Practical Plan",   cap: Infinity, filter: u => u.value >= 0.1 },
+    { id: "practical", name: "Practical Plan",   cap: Infinity, filter: u => u.value >= 0.10 },
   ];
 
   const plans = strategies.map(s => {
     const units = s.filter ? CURRENCY_UNITS.filter(s.filter) : CURRENCY_UNITS;
     let result = greedy(balance, units, s.cap);
 
-    // If practical leaves a remainder, fallback to full set
     if (s.id === "practical" && result.remaining > EPS) {
       const full = greedy(balance, CURRENCY_UNITS);
       result = full;
