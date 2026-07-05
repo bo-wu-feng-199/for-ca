@@ -1,7 +1,7 @@
 {
-  "name": "个人货币计算器",
-  "description": "快速计算支付差额的最优货币组合方案",
-  "version": "1.0.0",
+  "name": "CashCalc",
+  "description": "Personal cash calculator — real-time balance breakdown, history, and export.",
+  "version": "3.2.2",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",

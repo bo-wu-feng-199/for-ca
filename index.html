@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>个人货币计算器 · CashCalc</title>
-  <meta name="description" content="极简开发者风格的个人现金计算与记录工具">
+  <title>CashCalc — Personal Cash Calculator</title>
+  <meta name="description" content="Lightweight personal cash calculator — real-time balance breakdown, history, export.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,8 +14,8 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <span class="logo">🧮 CashCalc</span>
-      <span class="sub-logo">个人货币计算器</span>
-      <button id="theme-btn" class="theme-btn" title="切换主题">🌙</button>
+      <span class="sub-logo">Personal Cash Calculator</span>
+      <button id="theme-btn" class="theme-btn" title="Toggle theme">🌙</button>
     </div>
   </header>
 
@@ -24,47 +24,47 @@
     <!-- ═══════ TWO-COLUMN LAYOUT ═══════ -->
     <div class="layout-split">
 
-      <!-- ═══ LEFT: 输入 + 结果 + 记录 ═══ -->
+      <!-- ═══ LEFT COLUMN ═══ -->
       <div class="col-left">
 
         <!-- 1. Input -->
         <section class="card">
           <div class="section-title">
-            <span>输入金额</span>
+            <span>Enter Amount</span>
             <span class="title-meta">¥0.01 ~ ¥1,000</span>
           </div>
 
           <div class="input-tabs">
-            <button class="tab tab-active" data-mode="dual">双框输入</button>
-            <button class="tab" data-mode="smart">单行解析</button>
+            <button class="tab tab-active" data-mode="dual">Dual Input</button>
+            <button class="tab" data-mode="smart">Smart Input</button>
           </div>
 
           <div id="input-dual" class="input-row">
             <div class="field">
-              <label for="price">商品价格</label>
+              <label for="price">Item price</label>
               <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="8" autofocus>
             </div>
             <span class="field-arrow">→</span>
             <div class="field">
-              <label for="paid">支付金额</label>
+              <label for="paid">Amount paid</label>
               <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="8">
             </div>
           </div>
 
           <div id="input-smart" class="input-row" hidden>
             <div class="field full">
-              <label for="smart">价格 + 支付（空格 / + / 逗号分隔）</label>
-              <input type="text" id="smart" inputmode="text" placeholder="例如: 59.5 100" autocomplete="off">
+              <label for="smart">Price + Paid (space / + / comma separated)</label>
+              <input type="text" id="smart" inputmode="text" placeholder="e.g. 59.5 100" autocomplete="off">
             </div>
           </div>
 
           <div class="tag-bar">
-            <span class="tag-label">标签</span>
-            <label class="tag-opt"><input type="radio" name="tag" value="shopping" checked>🛒 购物</label>
-            <label class="tag-opt"><input type="radio" name="tag" value="dining">🍜 餐饮</label>
-            <label class="tag-opt"><input type="radio" name="tag" value="travel">🚗 出行</label>
-            <label class="tag-opt"><input type="radio" name="tag" value="cashier">💰 收银</label>
-            <label class="tag-opt"><input type="radio" name="tag" value="other">📋 其他</label>
+            <span class="tag-label">Tag</span>
+            <label class="tag-opt"><input type="radio" name="tag" value="shopping" checked>🛒 Shopping</label>
+            <label class="tag-opt"><input type="radio" name="tag" value="dining">🍜 Dining</label>
+            <label class="tag-opt"><input type="radio" name="tag" value="travel">🚗 Travel</label>
+            <label class="tag-opt"><input type="radio" name="tag" value="cashier">💰 Cashier</label>
+            <label class="tag-opt"><input type="radio" name="tag" value="other">📋 Other</label>
           </div>
 
           <div id="error-msg" class="error-msg" hidden></div>
@@ -73,7 +73,7 @@
         <!-- 2. Results -->
         <section id="result-area" class="result-area" hidden>
           <div class="section-title">
-            <span>结算方案</span>
+            <span>Settlement Plans</span>
             <span id="plan-count" class="title-meta"></span>
           </div>
           <div id="balance-bar" class="balance-bar"></div>
@@ -83,12 +83,12 @@
         <!-- 3. History -->
         <section class="card">
           <div class="section-title" style="margin-bottom:16px">
-            <span>计算记录</span>
+            <span>History</span>
             <div class="hist-actions">
               <button id="export-json" class="btn-sm">JSON</button>
               <button id="export-csv"  class="btn-sm">CSV</button>
               <button id="export-md"   class="btn-sm">MD</button>
-              <button id="clear-all"   class="btn-sm btn-danger">清空</button>
+              <button id="clear-all"   class="btn-sm btn-danger">Clear</button>
             </div>
           </div>
           <div id="history-list"></div>
@@ -96,84 +96,84 @@
 
       </div>
 
-      <!-- ═══ RIGHT: 介绍 × 4 + 使用注意事项 ═══ -->
+      <!-- ═══ RIGHT COLUMN ═══ -->
       <div class="col-right">
 
-        <!-- 4. 介绍 × 4 (2×2 grid) -->
+        <!-- 4. About × 4 -->
         <section class="card info-card">
-          <div class="section-title"><span>介绍</span></div>
+          <div class="section-title"><span>About</span></div>
           <div class="info-grid">
             <div class="info-item">
               <span class="info-icon">🧮</span>
               <div>
-                <strong>现金结算辅助工具</strong>
-                <p>输入商品价格和支付金额，自动计算支付差额并给出最优货币组合方案。</p>
+                <strong>Cash Settlement Tool</strong>
+                <p>Enter item price and amount paid — automatically computes the balance and suggests the optimal currency breakdown.</p>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon">⚡</span>
               <div>
-                <strong>实时计算</strong>
-                <p>输入即算，300ms 防抖，三种方案（最优 / 均衡 / 实操）同步生成。</p>
+                <strong>Real-time</strong>
+                <p>Calculates instantly as you type (300ms debounce). Three plans — Optimal, Balanced, Practical — generated simultaneously.</p>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon">📦</span>
               <div>
-                <strong>轻量离线</strong>
-                <p>纯前端实现，无后端依赖。数据存储在浏览器本地，无需网络即可使用。</p>
+                <strong>Lightweight & Offline</strong>
+                <p>Pure frontend, no backend. All data stored in localStorage. Works without internet connection.</p>
               </div>
             </div>
             <div class="info-item">
               <span class="info-icon">📋</span>
               <div>
-                <strong>记录与导出</strong>
-                <p>自动保存最近 10 条记录，支持 JSON / CSV / Markdown 三种格式导出。</p>
+                <strong>Records & Export</strong>
+                <p>Auto-saves the last 10 calculations. Export to JSON / CSV / Markdown with one click.</p>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 5. 使用注意事项（合并） -->
+        <!-- 5. Usage + Notes -->
         <section class="card">
-          <div class="section-title"><span>使用注意事项</span></div>
+          <div class="section-title"><span>Usage & Notes</span></div>
           <div class="usage-notes">
             <div class="step">
               <span class="step-num">1</span>
               <div>
-                <strong>输入价格与支付金额</strong>
-                <p>双框或单行模式输入，空格 / + / 逗号分隔。</p>
+                <strong>Enter price & paid</strong>
+                <p>Use dual inputs or the smart single-line mode with space / + / comma separators.</p>
               </div>
             </div>
             <div class="step">
               <span class="step-num">2</span>
               <div>
-                <strong>选择分类标签</strong>
-                <p>为计算选择标签（购物 / 餐饮 / 出行 / 收银 / 其他）。</p>
+                <strong>Pick a tag</strong>
+                <p>Choose a category (Shopping / Dining / Travel / Cashier / Other) for easy filtering.</p>
               </div>
             </div>
             <div class="step">
               <span class="step-num">3</span>
               <div>
-                <strong>查看方案并复用</strong>
-                <p>三种方案全展开，点击历史记录一键回填输入。</p>
+                <strong>Review plans & reuse</strong>
+                <p>All three plans are fully expanded. Click any history entry to auto-fill the inputs.</p>
               </div>
             </div>
             <div class="step">
               <span class="step-num">4</span>
               <div>
-                <strong>导出与备份</strong>
-                <p>JSON / CSV / MD 三种格式导出，数据仅存本地。</p>
+                <strong>Export & backup</strong>
+                <p>JSON / CSV / Markdown export. All data stays in your browser — nothing is uploaded.</p>
               </div>
             </div>
           </div>
           <div class="notes-compact">
-            <div class="note-dot">金额上限 ¥1,000</div>
-            <div class="note-dot">RMB 面额体系</div>
-            <div class="note-dot">localStorage 存储</div>
-            <div class="note-dot">纯前端，无后端</div>
-            <div class="note-dot">Dark Mode 切换</div>
-            <div class="note-dot">仅为辅助计算</div>
+            <div class="note-dot">Max ¥1,000</div>
+            <div class="note-dot">RMB denominations</div>
+            <div class="note-dot">localStorage only</div>
+            <div class="note-dot">Zero backend</div>
+            <div class="note-dot">Dark mode supported</div>
+            <div class="note-dot">For reference only</div>
           </div>
         </section>
 
@@ -185,7 +185,7 @@
 
   <footer class="page-footer">
     <div class="container">
-      <p>CashCalc v3.2 · 纯前端离线工具 · 数据仅存本地</p>
+      <p>CashCalc v3.2 · Pure frontend · All data stored locally</p>
     </div>
   </footer>
 

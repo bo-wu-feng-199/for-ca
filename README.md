@@ -1,70 +1,71 @@
-# PersonalMoneyCalc — 个人货币计算器
+# CashCalc — Personal Cash Calculator
 
-**支付差额最优货币组合的快速计算工具。**  
-适用于购物结算、日常记账等场景：输入商品价格和支付金额，自动给出支付差额的最优货币组合方案。
-
----
-
-## 功能
-
-- **差额结算** — 输入价格与支付金额，自动计算差额并给出最优货币组合
-- **RMB 面额支持** — ¥100 / 50 / 20 / 10 / 5 / 1 / 0.5 / 0.1 / 0.05 / 0.01
-- **即时计算** — 纯前端，无网络请求
-- **浏览器插件** — 支持作为 Chrome/Edge 扩展使用
-- **轻量无依赖** — 单页 HTML，无需构建工具
+**Lightweight personal cash calculation & record tool.**  
+Enter item price and amount paid — automatically computes the balance and suggests the optimal currency breakdown.
 
 ---
 
-## 使用方式
+## Features
 
-### 网页端
+- **Balance settlement** — Enter price & paid; instantly get 3 optimized breakdown plans
+- **RMB denomination support** — ¥100 / 50 / 20 / 10 / 5 / 1 / 0.5 / 0.1 / 0.05 / 0.01
+- **Real-time calculation** — Pure frontend, no network requests, 300ms debounce
+- **History & export** — Auto-saves last 10 records (localStorage), export to JSON / CSV / Markdown
+- **Theme switcher** — Light & dark mode with CSS variables
+- **Lightweight** — Single HTML page, vanilla JS, no build tools
 
-直接用浏览器打开 `index.html`，或运行：
+---
+
+## Usage
+
+### Web
+
+Open `index.html` in a browser, or run:
 
 ```bash
 npx serve .
 ```
 
-### 浏览器插件
+### Browser extension
 
-1. 打开 Chrome/Edge → `chrome://extensions`
-2. 开启 **开发者模式**
-3. 加载已解压的扩展程序 → 选择本项目目录
-4. 点击工具栏图标即可使用
+1. Open Chrome/Edge → `chrome://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked** → select this project directory
+4. Use the extension icon in the toolbar
 
 ---
 
-## 项目结构
+## Project Structure
 
 ```
-personal-money-calc/
-├── index.html          # 主页面
-├── app.js              # 应用逻辑
-├── style.css           # 样式
-├── manifest.json       # 浏览器扩展清单
+cashcalc/
+├── index.html          # Main page
+├── app.js              # UI controller
+├── style.css           # Styles
+├── manifest.json       # Browser extension manifest
 ├── src/js/
-│   └── core.js         # 核心结算算法
+│   └── core.js         # Core calculation engine
 ├── tests/
-│   └── core.test.js    # 单元测试
+│   └── core.test.js    # Unit tests
 ├── .github/workflows/
-│   └── ci.yml          # CI 配置
-└── package.json        # 测试依赖
+│   └── ci.yml          # CI config
+└── package.json        # Test dependencies
 ```
 
 ---
 
-## 核心算法
+## Core Algorithm
 
-贪心算法：从大到小遍历面额，每次取最大可用数量。
+Greedy algorithm: iterates denominations from largest to smallest, taking the maximum possible quantity each time.
 
-人民币面额体系是规范系统（canonical），贪心算法保证全局最优。
+The RMB denomination set is canonical — greedy guarantees the globally optimal (minimum piece) solution.
 
-- 时间复杂度: **O(n)**，n = 面额数量（固定 10）
-- 空间复杂度: **O(1)**
+- Time complexity: **O(n)**, n = number of denominations (fixed at 10)
+- Space complexity: **O(1)**
 
 ---
 
-## 开发
+## Development
 
 ```bash
 npm install

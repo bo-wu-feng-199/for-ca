@@ -1,20 +1,21 @@
 /**
  * CashCalc v3.2 — UI controller.
- * 全展开 · 实时计算 · 历史记录 · 三格式导出 · 主题切换
+ * Fully expanded · Real-time calc · History · Export · Theme switcher
  */
 
 import { calculate, parseInput } from "./src/js/core.js";
 
-/* ── Constants ─────────────────────────────────────────────────────────── */
 const MAX_VAL = 1000;
 const MAX_HIST = 10;
-const DB = 300; // debounce ms
+const DB = 300;
 const KEY_HIST = "cc32_history";
 const KEY_THEME = "cc32_theme";
-const LABELS = { optimal: "最优", balanced: "均衡", practical: "实操" };
-const TAG_LABELS = { shopping: "🛒 购物", dining: "🍜 餐饮", travel: "🚗 出行", cashier: "💰 收银", other: "📋 其他" };
+const LABELS = { optimal: "Optimal", balanced: "Balanced", practical: "Practical" };
+const TAG_LABELS = {
+  shopping: "🛒 Shopping", dining: "🍜 Dining", travel: "🚗 Travel",
+  cashier: "💰 Cashier", other: "📋 Other",
+};
 
-/* ── DOM ───────────────────────────────────────────────────────────────── */
 const themeBtn   = document.getElementById("theme-btn");
 const priceInp   = document.getElementById("price");
 const paidInp    = document.getElementById("paid");
@@ -119,7 +120,7 @@ function run() {
   }
 
   if (price < 0 || paid < 0 || price > MAX_VAL || paid > MAX_VAL) {
-    showError(`金额范围 ¥0.01 ~ ¥${MAX_VAL.toLocaleString()}`);
+    showError(`Amount range ¥0.01 ~ ¥${MAX_VAL.toLocaleString()}`);
     hideResult();
     return;
   }
@@ -128,43 +129,38 @@ function run() {
   showResult(r, price, paid);
 }
 
-function hideResult() {
-  resultArea.hidden = true;
-}
+function hideResult() { resultArea.hidden = true; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Render results — all 3 plans expanded
+   Render results
    ═══════════════════════════════════════════════════════════════════════════ */
 function showResult(r, price, paid) {
   resultArea.hidden = false;
 
   if (r.status === "short") {
     balanceBar.innerHTML = "";
-    plansCtn.innerHTML = `<div class="result-msg"><span class="s">金额不足</span>，还差 ¥${Math.abs(r.balance).toFixed(2)}</div>`;
+    plansCtn.innerHTML = `<div class="result-msg"><span class="s">Insufficient payment</span> — short by ¥${Math.abs(r.balance).toFixed(2)}</div>`;
     return;
   }
   if (r.status === "exact") {
     balanceBar.innerHTML = "";
-    plansCtn.innerHTML = `<div class="result-msg"><span class="s">支付金额正好</span>，无需结算</div>`;
+    plansCtn.innerHTML = `<div class="result-msg"><span class="s">Exact amount</span> — no change needed</div>`;
     return;
   }
   if (r.status === "invalid") {
-    showError("请输入有效金额");
+    showError("Enter valid amounts");
     hideResult();
     return;
   }
 
-  // Save history
   saveHist({ price, paid, balance: r.balance, planType: r.plans[0].id, tag: getTag() });
 
-  // Balance bar
   balanceBar.innerHTML = `
-    <div><div class="lbl">差额</div><div class="val">¥${r.balance.toFixed(2)}</div></div>
-    <div><span class="tag">推荐：${r.plans[0].name}</span></div>`;
+    <div><div class="lbl">Balance</div><div class="val">¥${r.balance.toFixed(2)}</div></div>
+    <div><span class="tag">${r.plans[0].name} ★</span></div>`;
 
-  // 3 plans — all expanded
   const icons = ["⭐", "⚖️", "📦"];
-  const ranks = ["🥇 推荐", "🥈 备选", "🥉 备选"];
+  const ranks = ["★ Recommended", "Alternative", "Alternative"];
 
   plansCtn.innerHTML = r.plans.map((p, i) => {
     const uhtml = p.units.map(u =>
@@ -177,8 +173,8 @@ function showResult(r, price, paid) {
           <span class="nm">${p.name}</span>
           <span class="rk">${ranks[i]}</span>
           <span class="mt">
-            <span>${p.totalCount} 张/枚</span>
-            <span>${p.typeCount} 种面额</span>
+            <span>${p.totalCount} piece${p.totalCount !== 1 ? "s" : ""}</span>
+            <span>${p.typeCount} type${p.typeCount !== 1 ? "s" : ""}</span>
           </span>
         </div>
         <div class="plan-body">
@@ -208,7 +204,7 @@ function saveHist(entry) {
 
 function renderHist() {
   if (history.length === 0) {
-    histList.innerHTML = `<div class="hist-empty">暂无记录</div>`;
+    histList.innerHTML = `<div class="hist-empty">No records yet</div>`;
     return;
   }
 
@@ -230,7 +226,6 @@ function renderHist() {
       </div>`;
   }).join("");
 
-  // Click to reuse
   document.querySelectorAll(".hist-entry").forEach(el => {
     el.addEventListener("click", () => {
       const idx = parseInt(el.dataset.idx);
@@ -279,14 +274,14 @@ expCsv.addEventListener("click", () => {
 });
 
 expMd.addEventListener("click", () => {
-  const h = "| 价格 | 支付 | 差额 | 方案 | 标签 | 时间 |\n|------|------|------|------|------|------|\n";
+  const h = "| Price | Paid | Diff | Plan | Tag | Time |\n|------|------|------|------|------|------|\n";
   const r = history.map(e => {
     const t = new Date(e.timestamp);
     const ts = `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()} ${t.getHours()}:${String(t.getMinutes()).padStart(2,"0")}`;
     const tag = TAG_LABELS[e.tag] || "";
     return `| ¥${e.price.toFixed(2)} | ¥${e.paid.toFixed(2)} | ¥${e.balance.toFixed(2)} | ${LABELS[e.planType] || e.planType} | ${tag} | ${ts} |`;
   }).join("\n");
-  dl(`# 结算记录\n\n${h}${r}\n`, "records.md", "text/markdown");
+  dl(`# CashCalc Records\n\n${h}${r}\n`, "records.md", "text/markdown");
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
