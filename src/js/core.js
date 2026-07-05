@@ -34,7 +34,7 @@ export function parseInput(raw) {
   return { price: Math.round(p * 100) / 100, paid: Math.round(m * 100) / 100 };
 }
 
-// ── Greedy ────────────────────────────────────────────────────────────────
+// ── Greedy solver ─────────────────────────────────────────────────────────
 
 export function greedy(amount, units = CURRENCY_UNITS, cap = Infinity) {
   let remaining = amount;
@@ -52,12 +52,12 @@ export function greedy(amount, units = CURRENCY_UNITS, cap = Infinity) {
   return { items, remaining: remaining > EPS ? remaining : 0 };
 }
 
-// ── 3 strategies ──────────────────────────────────────────────────────────
+// ── 3 strategies ─────────────────────────────────────────────────────────
 
 const DESCRIPTIONS = {
-  optimal:   "按面额从大到小取最大数量，保证总张数最少，交接效率最高。",
-  balanced:  "每种面额最多取 3 张，超出部分分散到更小面额，分布均匀。",
-  practical: "跳过最小硬币面额（¥0.05、¥0.01），减少零碎小币，实操更便捷。",
+  optimal:   "Takes the largest possible quantity per denomination from top to bottom, ensuring the minimum total pieces for fastest handover.",
+  balanced:  "Limits each denomination to 3 units max; excess spills into smaller denominations for a well-distributed mix.",
+  practical: "Skips the smallest coin denominations (¥0.05, ¥0.01) — fewer tiny coins, more convenient in real-world cash transactions.",
 };
 
 export function calculate(price, paid) {
@@ -73,16 +73,16 @@ export function calculate(price, paid) {
     return { status: "short", balance, plans: [] };
 
   const strategies = [
-    { id: "optimal",   name: "最优效率方案", cap: Infinity, filter: null },
-    { id: "balanced",  name: "均衡分布方案", cap: 3,         filter: null },
-    { id: "practical", name: "实操友好方案", cap: Infinity, filter: u => u.value >= 0.1 },
+    { id: "optimal",   name: "Optimal Plan",     cap: Infinity, filter: null },
+    { id: "balanced",  name: "Balanced Plan",    cap: 3,        filter: null },
+    { id: "practical", name: "Practical Plan",   cap: Infinity, filter: u => u.value >= 0.1 },
   ];
 
   const plans = strategies.map(s => {
     const units = s.filter ? CURRENCY_UNITS.filter(s.filter) : CURRENCY_UNITS;
     let result = greedy(balance, units, s.cap);
 
-    // If practical leaves remainder, fallback to full set
+    // If practical leaves a remainder, fallback to full set
     if (s.id === "practical" && result.remaining > EPS) {
       const full = greedy(balance, CURRENCY_UNITS);
       result = full;
