@@ -19,7 +19,6 @@
 </head>
 <body>
 
-  <!-- ═══ Top Bar ═══════════════════════════════════════════════════════ -->
   <header class="topbar">
     <div class="container topbar-inner">
       <span class="logo">🧮 CashCalc</span>
@@ -29,25 +28,18 @@
   </header>
 
   <main class="container">
-
-    <!-- ═══ TWO-COLUMN LAYOUT ═══════════════════════════════════════════ -->
     <div class="layout-split">
 
-      <!-- LEFT COLUMN — Main tools -->
       <div class="col-left">
-
-        <!-- ── 1. Input ──────────────────────────────────────────────── -->
         <section class="card input-card">
           <h2 class="section-title">
             <span>💰 Enter Amount</span>
             <span class="title-meta">$0.01 – $1,000</span>
           </h2>
-
           <div class="input-options">
             <label class="io-opt"><input type="radio" name="imode" value="dual" checked> <span>Two boxes</span></label>
             <label class="io-opt"><input type="radio" name="imode" value="smart"> <span>One line</span></label>
           </div>
-
           <div id="input-dual" class="input-dual">
             <div class="field">
               <label for="price">Item price</label>
@@ -65,7 +57,6 @@
               </div>
             </div>
           </div>
-
           <div id="input-smart" class="input-smart" hidden>
             <div class="field">
               <label for="smart">Price and paid — use space, +, or comma</label>
@@ -75,7 +66,6 @@
               </div>
             </div>
           </div>
-
           <div class="tag-row">
             <span class="tag-lbl">Tag</span>
             <label class="tag-btn"><input type="radio" name="tag" value="shopping" checked>🛒 Shopping</label>
@@ -84,11 +74,9 @@
             <label class="tag-btn"><input type="radio" name="tag" value="cashier">💰 Cashier</label>
             <label class="tag-btn"><input type="radio" name="tag" value="other">📋 Other</label>
           </div>
-
           <div id="error-msg" class="error-msg" hidden role="alert"></div>
         </section>
 
-        <!-- ── 2. Results ────────────────────────────────────────────── -->
         <section id="result-section" class="card result-card" hidden>
           <h2 class="section-title">
             <span>📊 Change Breakdown</span>
@@ -97,32 +85,27 @@
           <div id="result-area"></div>
         </section>
 
-        <!-- ── 3. History ────────────────────────────────────────────── -->
         <section class="card hist-card">
           <h2 class="section-title">
             <span>📋 History</span>
             <div class="hist-btns">
               <button id="export-json" class="btn-s">JSON</button>
-              <button id="export-csv"  class="btn-s">CSV</button>
-              <button id="export-md"   class="btn-s">MD</button>
-              <button id="clear-all"   class="btn-s btn-s-del">Clear</button>
+              <button id="export-csv" class="btn-s">CSV</button>
+              <button id="export-md" class="btn-s">MD</button>
+              <button id="clear-all" class="btn-s btn-s-del">Clear</button>
             </div>
           </h2>
           <div id="history-list"></div>
         </section>
-
       </div>
 
-      <!-- RIGHT COLUMN — Info panels -->
       <div class="col-right">
-
-        <!-- ── About ─────────────────────────────────────────────────── -->
         <section class="card info-card">
           <h2 class="section-title"><span>ℹ️ About</span></h2>
           <div class="info-grid">
             <div class="info-item">
               <span class="info-icon">🧮</span>
-              <div><strong>Cash helper</strong><p>Enter price &amp; paid — get the best way to make change.</p></div>
+              <div><strong>Cash helper</strong><p>Enter price & paid — get the best way to make change.</p></div>
             </div>
             <div class="info-item">
               <span class="info-icon">⚡</span>
@@ -139,7 +122,6 @@
           </div>
         </section>
 
-        <!-- ── How to use ────────────────────────────────────────────── -->
         <section class="card">
           <h2 class="section-title"><span>📖 How to Use</span></h2>
           <div class="steps">
@@ -150,7 +132,6 @@
           </div>
         </section>
 
-        <!-- ── USD Guide ─────────────────────────────────────────────── -->
         <section class="card">
           <h2 class="section-title"><span>💵 USD Bills &amp; Coins</span></h2>
           <div class="denom-guide">
@@ -177,11 +158,9 @@
             </div>
           </div>
         </section>
-
       </div>
 
-    </div><!-- /layout-split -->
-
+    </div>
   </main>
 
   <footer class="page-footer">
@@ -191,180 +170,5 @@
   </footer>
 
   <script type="module" src="app.min.js"></script>
-</head>
-<body>
-
-  <!-- ═══ Top Bar ═══════════════════════════════════════════════════════ -->
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <span class="logo">🧮 CashCalc</span>
-      <span class="sub-logo">Personal Cash Calculator</span>
-      <button id="theme-btn" class="theme-btn" title="Switch dark/light mode">🌙</button>
-    </div>
-  </header>
-
-  <main class="container">
-
-    <!-- ═══ TWO-COLUMN LAYOUT ═══════════════════════════════════════════ -->
-    <div class="layout-split">
-
-      <!-- LEFT COLUMN — Main tools -->
-      <div class="col-left">
-
-        <!-- ── 1. Input ──────────────────────────────────────────────── -->
-        <section class="card input-card">
-          <h2 class="section-title">
-            <span>💰 Enter Amount</span>
-            <span class="title-meta">$0.01 – $1,000</span>
-          </h2>
-
-          <div class="input-options">
-            <label class="io-opt"><input type="radio" name="imode" value="dual" checked> <span>Two boxes</span></label>
-            <label class="io-opt"><input type="radio" name="imode" value="smart"> <span>One line</span></label>
-          </div>
-
-          <div id="input-dual" class="input-dual">
-            <div class="field">
-              <label for="price">Item price</label>
-              <div class="inp-wrap">
-                <span class="inp-prefix">$</span>
-                <input type="text" id="price" inputmode="decimal" placeholder="0.00" maxlength="8" autofocus>
-              </div>
-            </div>
-            <span class="field-arrow">→</span>
-            <div class="field">
-              <label for="paid">Amount paid</label>
-              <div class="inp-wrap">
-                <span class="inp-prefix">$</span>
-                <input type="text" id="paid" inputmode="decimal" placeholder="0.00" maxlength="8">
-              </div>
-            </div>
-          </div>
-
-          <div id="input-smart" class="input-smart" hidden>
-            <div class="field">
-              <label for="smart">Price and paid — use space, +, or comma</label>
-              <div class="inp-wrap">
-                <span class="inp-prefix">$</span>
-                <input type="text" id="smart" inputmode="text" placeholder="e.g. 23.50 50">
-              </div>
-            </div>
-          </div>
-
-          <div class="tag-row">
-            <span class="tag-lbl">Tag</span>
-            <label class="tag-btn"><input type="radio" name="tag" value="shopping" checked>🛒 Shopping</label>
-            <label class="tag-btn"><input type="radio" name="tag" value="dining">🍜 Dining</label>
-            <label class="tag-btn"><input type="radio" name="tag" value="travel">🚗 Travel</label>
-            <label class="tag-btn"><input type="radio" name="tag" value="cashier">💰 Cashier</label>
-            <label class="tag-btn"><input type="radio" name="tag" value="other">📋 Other</label>
-          </div>
-
-          <div id="error-msg" class="error-msg" hidden role="alert"></div>
-        </section>
-
-        <!-- ── 2. Results ────────────────────────────────────────────── -->
-        <section id="result-section" class="card result-card" hidden>
-          <h2 class="section-title">
-            <span>📊 Change Breakdown</span>
-            <span id="plan-count" class="title-meta"></span>
-          </h2>
-          <div id="result-area"></div>
-        </section>
-
-        <!-- ── 3. History ────────────────────────────────────────────── -->
-        <section class="card hist-card">
-          <h2 class="section-title">
-            <span>📋 History</span>
-            <div class="hist-btns">
-              <button id="export-json" class="btn-s">JSON</button>
-              <button id="export-csv"  class="btn-s">CSV</button>
-              <button id="export-md"   class="btn-s">MD</button>
-              <button id="clear-all"   class="btn-s btn-s-del">Clear</button>
-            </div>
-          </h2>
-          <div id="history-list"></div>
-        </section>
-
-      </div>
-
-      <!-- RIGHT COLUMN — Info panels -->
-      <div class="col-right">
-
-        <!-- ── About ─────────────────────────────────────────────────── -->
-        <section class="card info-card">
-          <h2 class="section-title"><span>ℹ️ About</span></h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-icon">🧮</span>
-              <div><strong>Cash helper</strong><p>Enter price &amp; paid — get the best way to make change.</p></div>
-            </div>
-            <div class="info-item">
-              <span class="info-icon">⚡</span>
-              <div><strong>Instant</strong><p>Results appear as you type. No button to push.</p></div>
-            </div>
-            <div class="info-item">
-              <span class="info-icon">📦</span>
-              <div><strong>Offline</strong><p>Works without internet. Everything stays on your device.</p></div>
-            </div>
-            <div class="info-item">
-              <span class="info-icon">📋</span>
-              <div><strong>Export</strong><p>Save records as JSON, CSV, or Markdown.</p></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ── How to use ────────────────────────────────────────────── -->
-        <section class="card">
-          <h2 class="section-title"><span>📖 How to Use</span></h2>
-          <div class="steps">
-            <div class="step"><span class="step-n">1</span><div><strong>Enter price</strong><p>Type how much the item costs.</p></div></div>
-            <div class="step"><span class="step-n">2</span><div><strong>Enter paid</strong><p>Type how much cash you gave.</p></div></div>
-            <div class="step"><span class="step-n">3</span><div><strong>See 3 options</strong><p>Pick the plan that works best for you.</p></div></div>
-            <div class="step"><span class="step-n">4</span><div><strong>Tap history</strong><p>Click any past record to reuse it.</p></div></div>
-          </div>
-        </section>
-
-        <!-- ── USD Guide ─────────────────────────────────────────────── -->
-        <section class="card">
-          <h2 class="section-title"><span>💵 USD Bills &amp; Coins</span></h2>
-          <div class="denom-guide">
-            <div>
-              <div class="denom-ct">Paper bills</div>
-              <div class="denom-row">
-                <span class="d-chip d-bill">$100</span>
-                <span class="d-chip d-bill">$50</span>
-                <span class="d-chip d-bill">$20</span>
-                <span class="d-chip d-bill">$10</span>
-                <span class="d-chip d-bill">$5</span>
-                <span class="d-chip d-bill">$2</span>
-                <span class="d-chip d-bill">$1</span>
-              </div>
-            </div>
-            <div>
-              <div class="denom-ct">Coins</div>
-              <div class="denom-row">
-                <span class="d-chip d-coin">Quarter 25¢</span>
-                <span class="d-chip d-coin">Dime 10¢</span>
-                <span class="d-chip d-coin">Nickel 5¢</span>
-                <span class="d-chip d-coin">Penny 1¢</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
-
-    </div><!-- /layout-split -->
-
-  </main>
-
-  <footer class="page-footer">
-    <div class="container">
-      <p>CashCalc · All data stays on your device · <a href="https://github.com/bo-wu-feng-199/for-ca" target="_blank" rel="noopener">GitHub</a></p>
-    </div>
-  </footer>
-
-  <script type="module" src="app.js"></script>
 </body>
 </html>

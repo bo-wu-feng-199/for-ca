@@ -2,7 +2,7 @@
  * CashCalc — UI controller (mass-market edition).
  */
 
-import { calculate, parseInput } from "./src/js/core.js";
+import { calculate, parseInput } from "./src/js/core.min.js";
 
 const MAX_VAL = 1000;
 const MAX_HIST = 10;
