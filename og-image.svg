@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f5f7"/>
+  <rect x="0" y="0" width="1200" height="8" fill="#2563eb"/>
+  <text x="600" y="240" font-family="system-ui,-apple-system,sans-serif" font-size="72" font-weight="800" fill="#111827" text-anchor="middle">CashCalc</text>
+  <text x="600" y="310" font-family="system-ui,-apple-system,sans-serif" font-size="32" font-weight="400" fill="#4b5563" text-anchor="middle">Personal Cash Calculator</text>
+  <rect x="440" y="360" width="320" height="56" rx="28" fill="#2563eb"/>
+  <text x="600" y="396" font-family="system-ui,-apple-system,sans-serif" font-size="22" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Try it Live</text>
+  <rect x="520" y="440" width="160" height="48" rx="12" fill="#e5e7eb"/>
+  <text x="600" y="464" font-family="system-ui,-apple-system,sans-serif" font-size="20" font-weight="400" fill="#9ca3af" text-anchor="middle" dominant-baseline="central">$ 0.00</text>
+  <text x="600" y="500" font-family="system-ui,-apple-system,sans-serif" font-size="16" font-weight="400" fill="#9ca3af" text-anchor="middle">Enter any amount → instant breakdown</text>
+</svg>
