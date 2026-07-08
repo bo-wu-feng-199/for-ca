@@ -25,6 +25,7 @@ export function parseInput(raw) {
   const s = raw.trim();
   let parts;
   if (s.includes(" "))       parts = s.split(/\s+/);
+  else if (s.includes("/"))  parts = s.split("/");
   else if (s.includes("+"))  parts = s.split("+");
   else if (s.includes(","))  parts = s.split(",");
   else return null;
@@ -56,9 +57,9 @@ export function greedy(amount, units = CURRENCY_UNITS, cap = Infinity) {
 // ── 3 strategies ─────────────────────────────────────────────────────────
 
 const DESCRIPTIONS = {
-  optimal:   "Takes the largest possible quantity per denomination from top to bottom, ensuring the minimum total pieces for fastest handover.",
-  balanced:  "Limits each denomination to 3 units max; excess spills into smaller denominations for a well-distributed mix.",
-  practical: "Skips Penny and Nickel — fewer tiny coins, more convenient in real-world cash transactions.",
+  optimal:   "Uses the fewest pieces possible. Best for fast cash transactions — count and hand over quickly.",
+  balanced:  "Spreads change across more denominations so you don't run out of small bills. Great for everyday wallet use.",
+  practical: "Avoids tiny coins (pennies & nickels). Ideal when the receiver prefers fewer small coins in their pocket.",
 };
 
 export function calculate(price, paid) {

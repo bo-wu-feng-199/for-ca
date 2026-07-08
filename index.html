@@ -31,6 +31,19 @@
     <div class="layout-split">
 
       <div class="col-left">
+
+        <!-- Demo bar (first visit only) -->
+        <div id="demo-bar" class="demo-bar" hidden>
+          <div class="demo-content">
+            <strong>👋 How it works:</strong>
+            Type how much something costs and how much cash you gave.
+            CashCalc instantly shows the best way to make change.
+            <button id="demo-click" class="demo-try">Try: $59.50 → $100</button>
+            <button id="demo-close" class="demo-dismiss" title="Dismiss">✕</button>
+          </div>
+        </div>
+
+        <!-- Input -->
         <section class="card input-card">
           <h2 class="section-title">
             <span>💰 Enter Amount</span>
@@ -59,13 +72,15 @@
           </div>
           <div id="input-smart" class="input-smart" hidden>
             <div class="field">
-              <label for="smart">Price and paid — use space, +, or comma</label>
+              <label for="smart">Price and paid — use space, /, +, or comma</label>
               <div class="inp-wrap">
                 <span class="inp-prefix">$</span>
-                <input type="text" id="smart" inputmode="text" placeholder="e.g. 23.50 50">
+                <input type="text" id="smart" inputmode="text" placeholder="e.g. 23.50 50 or 23.50/50">
               </div>
             </div>
           </div>
+          <!-- Quick amount buttons -->
+          <div id="quick-btns" class="quick-row"></div>
           <div class="tag-row">
             <span class="tag-lbl">Tag</span>
             <label class="tag-btn"><input type="radio" name="tag" value="shopping" checked>🛒 Shopping</label>
@@ -77,6 +92,7 @@
           <div id="error-msg" class="error-msg" hidden role="alert"></div>
         </section>
 
+        <!-- Results -->
         <section id="result-section" class="card result-card" hidden>
           <h2 class="section-title">
             <span>📊 Change Breakdown</span>
@@ -85,6 +101,7 @@
           <div id="result-area"></div>
         </section>
 
+        <!-- History -->
         <section class="card hist-card">
           <h2 class="section-title">
             <span>📋 History</span>
@@ -92,10 +109,24 @@
               <button id="export-json" class="btn-s">JSON</button>
               <button id="export-csv" class="btn-s">CSV</button>
               <button id="export-md" class="btn-s">MD</button>
+              <button id="export-print" class="btn-s">Print</button>
               <button id="clear-all" class="btn-s btn-s-del">Clear</button>
             </div>
           </h2>
+          <div id="hist-stats"></div>
+          <div class="hist-controls">
+            <input type="text" id="hist-search" class="hist-search" placeholder="Search by amount..." maxlength="20">
+            <select id="hist-filter" class="hist-filter">
+              <option value="">All tags</option>
+              <option value="shopping">🛒 Shopping</option>
+              <option value="dining">🍜 Dining</option>
+              <option value="travel">🚗 Travel</option>
+              <option value="cashier">💰 Cashier</option>
+              <option value="other">📋 Other</option>
+            </select>
+          </div>
           <div id="history-list"></div>
+          <button id="hist-load-more" class="hist-more" hidden>Load more</button>
         </section>
       </div>
 
@@ -117,7 +148,7 @@
             </div>
             <div class="info-item">
               <span class="info-icon">📋</span>
-              <div><strong>Export</strong><p>Save records as JSON, CSV, or Markdown.</p></div>
+              <div><strong>Export</strong><p>Save records as JSON, CSV, Markdown, or Print.</p></div>
             </div>
           </div>
         </section>
