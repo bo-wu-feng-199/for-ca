@@ -363,3 +363,37 @@ expPrint.addEventListener("click", () => window.print());
 /* ══ Init ══════════════════════════════════════════════════════════════ */
 renderHist();
 renderStats();
+
+/* ══ URL sharing — ?price=X&paid=Y ════════════════════════════════════ */
+(function loadFromURL() {
+  try {
+    const p = new URLSearchParams(location.search);
+    const pr = p.get("price"), pa = p.get("paid");
+    if (pr && pa) {
+      priceInp.value = pr;
+      paidInp.value = pa;
+      if (mode === "smart") smartInp.value = pr + " " + pa;
+      setTimeout(run, 50);
+    }
+  } catch {}
+})();
+
+/* ══ Keyboard shortcuts ════════════════════════════════════════════════ */
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    priceInp.value = "";
+    paidInp.value = "";
+    smartInp.value = "";
+    clearError();
+    hideResult();
+    priceInp.focus();
+    return;
+  }
+  if (e.key === "Enter") {
+    const t = e.target;
+    if (t === priceInp || t === paidInp || t === smartInp) {
+      e.preventDefault();
+      run();
+    }
+  }
+});
