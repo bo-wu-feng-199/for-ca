@@ -5,6 +5,8 @@
 
 > **Try it live → [for-ca.vercel.app](https://for-ca.vercel.app)**
 
+![CashCalc Screenshot](screenshot.png)
+
 A minimal transaction cognition layer for everyday numerical flow.
 
 ---
