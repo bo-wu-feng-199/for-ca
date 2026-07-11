@@ -37,6 +37,7 @@ const searchInp  = $("hist-search");
 const filterTag  = $("hist-filter");
 const loadMore   = $("hist-load-more");
 const quickBtns  = $("quick-btns");
+const swapBtn    = $("swap-btn");
 const modeRadios = document.querySelectorAll('input[name="imode"]');
 
 let history = loadHist();
@@ -124,7 +125,20 @@ quickBtns.addEventListener("click", e => {
   debounceRun();
 });
 
-/* ══ Calculation ════════════════════════════════════════════════════════ */
+/* ══ Swap price and paid ══════════════════════════════════════════════ */
+swapBtn.addEventListener("click", () => {
+  if (mode === "smart") {
+    const parts = smartInp.value.split(/[\s+/,]+/);
+    if (parts.length >= 2) {
+      [parts[0], parts[1]] = [parts[1], parts[0]];
+      smartInp.value = parts.join(" ");
+    }
+  } else {
+    [priceInp.value, paidInp.value] = [paidInp.value, priceInp.value];
+  }
+  clearError();
+  run();
+});
 function debounceRun() {
   clearTimeout(dtimer);
   dtimer = setTimeout(run, DB);
