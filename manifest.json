@@ -1,19 +1,15 @@
 {
-  "name": "CashCalc",
-  "description": "Personal cash calculator — real-time balance breakdown, history, and export.",
-  "version": "3.2.2",
-  "manifest_version": 3,
-  "action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
-  },
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  }
+  "name": "CashCalc — Personal Cash Calculator",
+  "short_name": "CashCalc",
+  "description": "Instant cash change breakdown — 3 optimal strategies.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f5f7",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
 }

@@ -212,7 +212,11 @@ function showResult(r, price, paid) {
 
 /* ══ History — storage ═════════════════════════════════════════════════ */
 function loadHist() {
-  try { return JSON.parse(localStorage.getItem(KEY_HIST)) || []; } catch { return []; }
+  try {
+    const arr = JSON.parse(localStorage.getItem(KEY_HIST));
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(e => e && typeof e.price === "number" && typeof e.paid === "number" && typeof e.balance === "number");
+  } catch { return []; }
 }
 function persist() {
   try { localStorage.setItem(KEY_HIST, JSON.stringify(history)); } catch {}
