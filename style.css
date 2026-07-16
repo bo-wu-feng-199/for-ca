@@ -72,6 +72,12 @@ body {
 .topbar-inner { display: flex; align-items: center; gap: 12px; }
 .logo { font-size: 1.3rem; font-weight: 800; white-space: nowrap; }
 .sub-logo { font-size: .85rem; color: var(--text-dim); flex: 1; }
+.currency-select {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 12px; font-size: .85rem; font-weight: 600;
+  font-family: inherit; color: var(--text); cursor: pointer; outline: none;
+}
+.currency-select:focus { border-color: var(--blue); }
 .theme-btn {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 10px; padding: 8px 13px; font-size: 1.15rem;
@@ -578,6 +584,37 @@ details[open] .opt-summary::before { transform: rotate(90deg); }
   cursor: pointer; transition: all .12s;
 }
 .hist-more:hover { border-color: var(--blue); color: var(--blue); }
+.hist-focused { border-color: var(--blue) !important; background: var(--blue-bg) !important; }
+.hist-note { font-size: .7rem; color: var(--text-muted); background: var(--tag-bg); padding: 2px 7px; border-radius: 4px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Note row
+   ═══════════════════════════════════════════════════════════════════════════ */
+.note-row { margin-top: 10px; }
+.calc-note {
+  width: 100%; padding: 8px 12px; font-size: .85rem; font-family: inherit;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  color: var(--text); outline: none;
+}
+.calc-note:focus { border-color: var(--blue); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Tools (bill split, etc.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.tool-details { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: var(--surface); }
+.tool-summary {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  cursor: pointer; font-weight: 600; font-size: .88rem;
+  background: var(--tag-bg); list-style: none;
+}
+.tool-summary::-webkit-details-marker { display: none; }
+.tool-summary::before { content: "\25B6"; font-size: .7rem; color: var(--text-muted); transition: transform .15s; }
+details[open] .tool-summary::before { transform: rotate(90deg); }
+.tool-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.tool-body .field { margin-bottom: 0; }
+.tool-desc { font-size: .82rem; color: var(--text-dim); line-height: 1.5; }
+.split-result { font-size: .88rem; color: var(--text); }
+.split-line { margin-bottom: 4px; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Print mode

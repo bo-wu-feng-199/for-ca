@@ -26,6 +26,12 @@
     <div class="container topbar-inner">
       <span class="logo">🧮 CashCalc</span>
       <span class="sub-logo">Personal Cash Calculator</span>
+      <select id="currency-select" class="currency-select">
+        <option value="USD">$ USD</option>
+        <option value="EUR">€ EUR</option>
+        <option value="JPY">¥ JPY</option>
+        <option value="CNY">¥ CNY</option>
+      </select>
       <button id="theme-btn" class="theme-btn" title="Switch dark/light mode">🌙</button>
     </div>
   </header>
@@ -92,6 +98,9 @@
             <label class="tag-btn"><input type="radio" name="tag" value="cashier">💰 Cashier</label>
             <label class="tag-btn"><input type="radio" name="tag" value="other">📋 Other</label>
           </div>
+          <div class="note-row">
+            <input type="text" id="calc-note" class="calc-note" placeholder="Add a note (optional)" maxlength="40">
+          </div>
           <div id="error-msg" class="error-msg" hidden role="alert"></div>
         </section>
 
@@ -113,6 +122,8 @@
               <button id="export-csv" class="btn-s">CSV</button>
               <button id="export-md" class="btn-s">MD</button>
               <button id="export-print" class="btn-s">Print</button>
+              <button id="import-btn" class="btn-s">Import</button>
+              <input type="file" id="import-file" accept=".json" hidden>
               <button id="clear-all" class="btn-s btn-s-del">Clear</button>
             </div>
           </h2>
@@ -164,6 +175,33 @@
             <div class="step"><span class="step-n">3</span><div><strong>See 3 options</strong><p>Pick the plan that works best for you.</p></div></div>
             <div class="step"><span class="step-n">4</span><div><strong>Tap history</strong><p>Click any past record to reuse it.</p></div></div>
           </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title"><span>💵 Money Tools</span></h2>
+          <details class="tool-details" id="bill-split-section">
+            <summary class="tool-summary">🧑‍🤝‍🧑 Split a bill</summary>
+            <div class="tool-body">
+              <div class="field">
+                <label for="split-total">Total amount</label>
+                <div class="inp-wrap">
+                  <span class="inp-prefix" id="split-sym">$</span>
+                  <input type="text" id="split-total" inputmode="decimal" placeholder="0.00" maxlength="8">
+                </div>
+              </div>
+              <div class="field">
+                <label for="split-people">Number of people</label>
+                <input type="number" id="split-people" min="2" max="100" value="2" placeholder="2">
+              </div>
+              <div id="split-result" class="split-result"></div>
+            </div>
+          </details>
+          <details class="tool-details" id="note-helper">
+            <summary class="tool-summary">📝 Notes on records</summary>
+            <div class="tool-body">
+              <p class="tool-desc">You can add an optional note to each calculation. Notes appear in your history and exports. Type a note in the input card before calculating.</p>
+            </div>
+          </details>
         </section>
 
         <section class="card">
