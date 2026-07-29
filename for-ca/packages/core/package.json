@@ -4,12 +4,30 @@
   "description": "Multi-currency cash change engine — zero-dependency denomination breakdown algorithm",
   "type": "module",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
   },
   "files": ["src/"],
   "scripts": {
-    "test": "node --experimental-vm-modules ../../../node_modules/jest-cli/bin/jest.js"
+    "build": "terser src/index.js -o src/index.min.js",
+    "test": "node --experimental-vm-modules ../../../node_modules/jest-cli/bin/jest.js",
+    "prepublishOnly": "npm test"
   },
-  "license": "MIT"
+  "devDependencies": {
+    "terser": "^5.48.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bo-wu-feng-199/for-ca.git",
+    "directory": "for-ca/packages/core"
+  },
+  "keywords": ["cash", "change", "currency", "greedy", "denomination", "pos", "retail"],
+  "engines": {
+    "node": ">=18"
+  }
 }
