@@ -5,8 +5,8 @@
   "description": "Lightweight personal cash calculator — real-time balance breakdown, history, and export.",
   "type": "module",
   "scripts": {
-    "build": "csso style.css --output style.min.css && terser app.js -cmo app.min.js && terser src/js/core.js -cmo src/js/core.min.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "build": "cp for-ca/packages/core/src/index.js src/js/core.js && csso style.css --output style.min.css && terser app.js -cmo app.min.js && terser src/js/core.js -cmo src/js/core.min.js",
+    "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js",
     "start": "npx serve ."
   },
   "devDependencies": {

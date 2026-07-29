@@ -1,0 +1,7 @@
+{
+  "name": "for-ca",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

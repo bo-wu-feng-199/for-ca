@@ -1,0 +1,15 @@
+{
+  "name": "@for-ca/core",
+  "version": "0.1.0",
+  "description": "Multi-currency cash change engine — zero-dependency denomination breakdown algorithm",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src/"],
+  "scripts": {
+    "test": "node --experimental-vm-modules ../../../node_modules/jest-cli/bin/jest.js"
+  },
+  "license": "MIT"
+}
