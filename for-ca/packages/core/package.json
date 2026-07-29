@@ -1,5 +1,5 @@
 {
-  "name": "@for-ca/core",
+  "name": "for-ca-core",
   "version": "0.1.0",
   "description": "Multi-currency cash change engine — zero-dependency denomination breakdown algorithm",
   "type": "module",
