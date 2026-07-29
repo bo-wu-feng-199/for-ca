@@ -1,145 +1,65 @@
-# 🧾 CashCalc — Personal Cash Calculator
+# CashCalc — Multi-Currency Cash Change Engine
 
 [![Deployed on Vercel](https://img.shields.io/badge/vercel-%23000000.svg?logo=vercel&logoColor=white)](https://for-ca.vercel.app)
 [![Try it Live](https://img.shields.io/badge/Try_it_Live-2563eb?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBvbHlsaW5lIHBvaW50cz0iMTMgMiAzIDE0IDEyIDE0IDExIDIyIDIxIDEwIDEyIDEwIDEzIDIiLz48L3N2Zz4=&labelColor=2563eb)](https://for-ca.vercel.app)
+[![npm](https://img.shields.io/npm/v/for-ca-core)](https://www.npmjs.com/package/for-ca-core)
 
 > **Try it live → [for-ca.vercel.app](https://for-ca.vercel.app)**
+> **Install → `npm install for-ca-core`**
 
 ![CashCalc Screenshot](screenshot.png)
 
-A minimal transaction cognition layer for everyday numerical flow.
+Enter a price and the amount paid. Get 3 optimal change breakdown strategies instantly. Supports USD, EUR, JPY, CNY.
 
 ---
 
-## ▌Abstract
+## Features
 
-This project is not a calculator.
+- **3 strategies per calculation** — Optimal (fewest pieces), Balanced (spread across denominations), Practical (avoid tiny coins)
+- **Multi-currency** — USD, EUR, JPY, CNY with correct denominations and decimal places
+- **Cash inventory constraints** — Limit available banknotes/coins per denomination; engine auto-degrades when stock insufficient
+- **Zero dependencies** — Pure vanilla JS. No frameworks. No build tools.
+- **PWA** — Installable, works offline, keyboard shortcuts, URL sharing (`?price=X&paid=Y&currency=EUR`)
+- **Export** — JSON, CSV, Markdown, Print
+- **Privacy-first** — All data stays in localStorage. No server. No tracking.
 
-It is a micro-transaction interpreter designed to compress human cash reasoning into deterministic structure.
+## Web Demo
 
-Instead of asking:
+https://for-ca.vercel.app
 
-_"How much should I return?"_
+The web interface is a demonstration of the core engine. Use it directly in your browser or install it as a PWA.
 
-It reframes the problem as:
-
-_"How does value decompose under constrained denomination space?"_
-
----
-
-## ▌Core Idea
-
-Every transaction is treated as a bounded system:
+## Core Package
 
 ```
-Input Space:
-(price, paid)
-
-↓ transformation
-
-Δ = paid - price
-
-↓ decomposition
-
-Δ → discrete denomination vector
+npm install for-ca-core
 ```
 
-The system does not compute answers.
+```js
+import { calculate, CURRENCY_SETS } from "for-ca-core";
 
-It projects value into structured economic primitives.
+// Basic calculation
+const r = calculate(23.47, 100, "USD");
+// { status: "settled", balance: 76.53, plans: [...] }
 
----
-
-## ▌System Behavior Model
-
-The engine produces three parallel interpretations of the same delta:
-
-**1. Minimal Entropy Path**
-
-A greedy reduction toward least fragmentation.
-
-**2. Balanced Distribution Field**
-
-A stabilized representation across denomination space.
-
-**3. Operational Heuristic Path**
-
-Optimized for real-world execution speed and cognitive ease.
-
-Each output is not a "result", but a strategy of materialization.
-
----
-
-## ▌Interface Philosophy
-
-The UI is deliberately non-hierarchical.
-
-All states exist simultaneously:
-
-- Input is always active
-- Output is always visible
-- History is always present
-
-No collapse logic. No hidden layers. No secondary navigation.
-
-The system assumes:
-
-_"If a computation exists, it should be visible."_
-
----
-
-## ▌Design Language
-
-The interface follows a constrained visual grammar:
-
-- monochrome dual-mode system (light / dark)
-- grid-aligned typographic rhythm
-- no ornamental UI elements
-- functional spacing as structure
-- interaction reduced to immediate feedback loops
-
-Influenced by developer-grade minimal systems such as documentation surfaces and terminal-native tools.
-
----
-
-## ▌Memory Layer
-
-The system maintains a local temporal trace:
-
-- last 10 computations
-- immutable per session entry structure
-- instant replay capability via state rehydration
-
-This creates a shallow but persistent cognitive buffer:
-
-_"Recent financial states remain locally observable."_
-
----
-
-## ▌Export Layer
-
-Computation history can be externalized into structured artifacts:
-
-- **JSON** (machine truth representation)
-- **CSV** (analytical tabular projection)
-- **Markdown** (human-readable audit form)
-
-This allows the system to transition between:
-
-```
-interface → dataset → document
+// With inventory constraints
+const r2 = calculate(23.47, 100, "USD", { "$20": 3, "$10": 5 });
+// { inventory: { "$20": 1, "$10": 5 } } — one $20 consumed
 ```
 
-without state mutation.
+See [packages/core](for-ca/packages/core) for full API docs.
 
----
+## Repository Structure
 
-## ▌Philosophy
+```
+for-ca/
+├─ packages/core/       ← Reusable npm package (for-ca-core)
+├─ tests/               ← Core engine tests
+├─ app.js               ← Web demo UI controller
+├─ index.html           ← Web demo entry
+└─ style.css            ← Web demo styles
+```
 
-This project explores a narrow but intentional idea:
+## License
 
-reduce transactional cognition into a visible, deterministic structure that requires no interpretation layer.
-
-It is not optimized for complexity.
-
-It is optimized for clarity under constraint.
+MIT
