@@ -48,6 +48,7 @@ const splitTotal = $("split-total");
 const splitPeople= $("split-people");
 const splitResult= $("split-result");
 const splitSym   = $("split-sym");
+const copyBtn    = $("copy-result");
 const calcLedNum = $("calc-led-num");
 const calcModeLb = $("calc-mode-label");
 const modeRadios = document.querySelectorAll('input[name="imode"]');
@@ -282,7 +283,44 @@ function showResult(r, price, paid) {
     </details>`;
   }).join("");
   resultArea.innerHTML = hero + `<div class="result-others">${opts}</div>`;
+  lastResult = { r, price, paid, s, p };
 }
+
+/* ══ Copy result ═══════════════════════════════════════════════════════ */
+let lastResult = null;
+
+function copyText(txt) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(txt);
+  }
+  // Fallback for non-secure contexts
+  const ta = document.createElement("textarea");
+  ta.value = txt; document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); } catch {}
+  document.body.removeChild(ta);
+  return Promise.resolve();
+}
+
+copyBtn.addEventListener("click", () => {
+  if (!lastResult) return;
+  const { r, price, paid, s, p } = lastResult;
+  const lines = [
+    `CashCalc — ${s}${price.toFixed(p)} → ${s}${paid.toFixed(p)}`,
+    `Change: ${s}${r.balance.toFixed(p)}`,
+  ];
+  r.plans.forEach(pl => {
+    const parts = pl.units.map(u => `${u.count}× ${u.label}`).join(" + ");
+    lines.push(`\n[${pl.name}] ${pl.totalCount} pcs\n${parts}`);
+  });
+  copyText(lines.join("\n")).then(() => {
+    copyBtn.textContent = "✓ Copied";
+    setTimeout(() => { copyBtn.textContent = "📋 Copy"; }, 1500);
+  }).catch(() => {
+    copyBtn.textContent = "✕ Failed";
+    setTimeout(() => { copyBtn.textContent = "📋 Copy"; }, 1500);
+  });
+});
 
 /* ══ History — storage ═════════════════════════════════════════════════ */
 function loadHist() {

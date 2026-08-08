@@ -144,9 +144,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
+.res-actions { display: flex; align-items: center; gap: 8px; }
 .title-meta { font-size: .82rem; font-weight: 400; color: var(--text-muted); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
