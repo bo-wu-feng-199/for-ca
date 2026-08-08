@@ -48,6 +48,8 @@ const splitTotal = $("split-total");
 const splitPeople= $("split-people");
 const splitResult= $("split-result");
 const splitSym   = $("split-sym");
+const calcLedNum = $("calc-led-num");
+const calcModeLb = $("calc-mode-label");
 const modeRadios = document.querySelectorAll('input[name="imode"]');
 
 let history = loadHist();
@@ -468,6 +470,88 @@ document.addEventListener("keydown", e => {
     entries[histFocusIdx].scrollIntoView({ block: "nearest" });
   }
 });
+
+/* ══ Sync calculator (till) ═══════════════════════════════════════════ */
+let calcTarget = "price"; // "price" | "paid" | "smart"
+let calcBuffer = "";
+
+function calcTargetInput() {
+  if (mode === "smart") return smartInp;
+  return calcTarget === "paid" ? paidInp : priceInp;
+}
+function calcTargetName() {
+  return mode === "smart" ? "One line" : (calcTarget === "paid" ? "Amount paid" : "Item price");
+}
+function syncCalcLED() {
+  calcLedNum.textContent = calcBuffer || "0";
+  calcLedNum.classList.remove("blink"); void calcLedNum.offsetWidth; calcLedNum.classList.add("blink");
+  calcModeLb.textContent = "Input: " + calcTargetName();
+}
+function calcCommit() {
+  const inp = calcTargetInput();
+  inp.value = calcBuffer;
+  if (mode === "smart") { sanitise(inp); }
+  else { sanitise(inp); }
+  debounceRun();
+}
+function calcSetTarget(t) {
+  calcTarget = t;
+  calcBuffer = calcTargetInput().value;
+  syncCalcLED();
+}
+function calcKey(k) {
+  if (k >= "0" && k <= "9") {
+    if (calcBuffer.length < 8) calcBuffer += k;
+    syncCalcLED(); calcCommit();
+  } else if (k === ".") {
+    if (calcBuffer.indexOf(".") === -1) calcBuffer = calcBuffer ? calcBuffer + "." : "0.";
+    syncCalcLED(); calcCommit();
+  } else if (k === "del") {
+    calcBuffer = calcBuffer.slice(0, -1); syncCalcLED(); calcCommit();
+  } else if (k === "ac") {
+    calcBuffer = ""; syncCalcLED(); calcCommit(); clearError();
+  } else if (k === "mode") {
+    if (mode !== "smart") calcSetTarget(calcTarget === "price" ? "paid" : "price");
+  } else if (k === "swap") {
+    if (mode === "smart") {
+      const parts = smartInp.value.split(/[\s+/,]+/);
+      if (parts.length >= 2) {
+        [parts[0], parts[1]] = [parts[1], parts[0]];
+        smartInp.value = parts.join(" ");
+      }
+    } else {
+      [priceInp.value, paidInp.value] = [paidInp.value, priceInp.value];
+    }
+    calcBuffer = calcTargetInput().value; syncCalcLED();
+    clearError(); run();
+  } else if (k === "quick") {
+    const cur = parseFloat(calcTargetInput().value) || 0;
+    calcBuffer = String(cur + 20); syncCalcLED(); calcCommit();
+  } else if (k === "tags") {
+    const radios = tagRadios();
+    const idx = [...radios].findIndex(r => r.checked);
+    radios[(idx + 1) % radios.length].click();
+  } else if (k === "eq" || k === "enter") {
+    run();
+  }
+}
+document.querySelectorAll(".calc-key").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 120);
+    calcKey(btn.dataset.key);
+  });
+});
+/* Keep LED in sync when user types directly into inputs */
+[priceInp, paidInp, smartInp].forEach(inp => {
+  inp.addEventListener("input", () => {
+    if (document.activeElement === inp) {
+      calcTarget = mode === "smart" ? "smart" : (inp === paidInp ? "paid" : "price");
+      calcBuffer = inp.value;
+      syncCalcLED();
+    }
+  });
+});
+calcSetTarget("price");
 
 /* ══ Init ══════════════════════════════════════════════════════════════ */
 renderHist();
